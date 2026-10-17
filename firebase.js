@@ -21,16 +21,10 @@ let cloudSyncTimer = null;
 // ── Auth UI ──────────────────────────────────────────────────────────────────
 function updateAuthUI(user) {
   const btn = document.getElementById('auth-btn');
-  const avatar = document.getElementById('user-avatar');
   if (user) {
-    const name = user.displayName || user.email || '';
-    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-    avatar.textContent = initials;
-    avatar.style.display = 'flex';
     btn.textContent = 'Sign out';
     btn.classList.add('signed-in');
   } else {
-    avatar.style.display = 'none';
     btn.textContent = 'Sync';
     btn.classList.remove('signed-in');
   }
