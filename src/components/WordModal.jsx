@@ -1,8 +1,12 @@
 import { speakGerman } from '../lib/tts';
 import { displayGerman } from '../lib/german';
+import { getVerbForms } from '../lib/verbForms';
+
+const AUX_LABEL = { h: 'haben', s: 'sein', 'h/s': 'haben/sein' };
 
 export default function WordModal({ word, isLearned, onMarkLearned, onMarkNew, onClose }) {
   const learned = isLearned(word.id);
+  const verbForms = getVerbForms(word);
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal">
@@ -16,6 +20,15 @@ export default function WordModal({ word, isLearned, onMarkLearned, onMarkNew, o
         <span className={`modal-tag level-${word.level ?? 'B1'}`}>{word.level ?? 'B1'}</span>
         <div className="modal-english">{word.english}</div>
         <div className="modal-pos">{word.pos}</div>
+        {verbForms && (
+          <div className="verb-forms">
+            <span className="verb-form-item"><span className="vf-label">Prät.</span> {verbForms[0]}</span>
+            <span className="verb-form-sep">·</span>
+            <span className="verb-form-item"><span className="vf-label">Part. II</span> {verbForms[1]}</span>
+            <span className="verb-form-sep">·</span>
+            <span className="verb-form-item"><span className="vf-label">Aux.</span> {AUX_LABEL[verbForms[2]] ?? verbForms[2]}</span>
+          </div>
+        )}
         <div className="modal-sentences">
           <h4>Example Sentences</h4>
           {word.sentences.map((s, i) => (
