@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import WORDS from '../data/words';
 import { speakGerman } from '../lib/tts';
 
@@ -38,12 +38,7 @@ export default function Learn({ isLearned, markLearned, markNew, reset }) {
     setChoices(w ? buildChoices(w) : []);
     setPhase('word');
     setResult(null);
-    if (w) speakGerman(w.german);
   }, [isLearned]);
-
-  useEffect(() => {
-    if (word) speakGerman(word.german);
-  }, []);
 
   if (!word) {
     return (
