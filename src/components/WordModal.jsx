@@ -2,7 +2,7 @@ import { speakGerman } from '../lib/tts';
 import { displayGerman } from '../lib/german';
 import { getVerbForms } from '../lib/verbForms';
 
-const AUX_LABEL = { h: 'haben', s: 'sein', 'h/s': 'haben/sein' };
+const AUX = { h: 'hat', s: 'ist', 'h/s': 'hat/ist' };
 
 export default function WordModal({ word, isLearned, onMarkLearned, onMarkNew, onClose }) {
   const learned = isLearned(word.id);
@@ -24,9 +24,7 @@ export default function WordModal({ word, isLearned, onMarkLearned, onMarkNew, o
           <div className="verb-forms">
             <span className="verb-form-item"><span className="vf-label">Prät.</span> {verbForms[0]}</span>
             <span className="verb-form-sep">·</span>
-            <span className="verb-form-item"><span className="vf-label">Part. II</span> {verbForms[1]}</span>
-            <span className="verb-form-sep">·</span>
-            <span className="verb-form-item"><span className="vf-label">Aux.</span> {AUX_LABEL[verbForms[2]] ?? verbForms[2]}</span>
+            <span className="verb-form-item"><span className="vf-label">Part. II</span> {AUX[verbForms[2]] ?? 'hat'} {verbForms[1]}</span>
           </div>
         )}
         <div className="modal-sentences">
