@@ -1,18 +1,14 @@
-const PRESETS = [
-  { label: 'A2',       levels: ['A2'] },
-  { label: 'B1',       levels: ['B1'] },
-  { label: 'B2',       levels: ['B2'] },
-  { label: 'A2 + B1', levels: ['A2', 'B1'] },
-  { label: 'B1 + B2', levels: ['B1', 'B2'] },
-  { label: 'All',      levels: ['A2', 'B1', 'B2'] },
-];
-
-function sameSet(a, b) {
-  return a.length === b.length && a.every(x => b.includes(x));
-}
-
 export default function Settings({ settings, setLevels }) {
   const { levels } = settings;
+
+  function toggle(level) {
+    if (levels.includes(level)) {
+      if (levels.length === 1) return; // keep at least one selected
+      setLevels(levels.filter(l => l !== level));
+    } else {
+      setLevels([...levels, level]);
+    }
+  }
 
   return (
     <div className="settings-page">
@@ -20,15 +16,15 @@ export default function Settings({ settings, setLevels }) {
 
       <section className="settings-section">
         <h3>Vocabulary level</h3>
-        <p className="settings-hint">Choose which word lists to study.</p>
+        <p className="settings-hint">Select one or more levels to study.</p>
         <div className="level-picker">
-          {PRESETS.map(p => (
+          {['A2', 'B1', 'B2'].map(level => (
             <button
-              key={p.label}
-              className={`level-btn${sameSet(levels, p.levels) ? ' active' : ''}`}
-              onClick={() => setLevels(p.levels)}
+              key={level}
+              className={`level-btn${levels.includes(level) ? ' active' : ''}`}
+              onClick={() => toggle(level)}
             >
-              {p.label}
+              {level}
             </button>
           ))}
         </div>
