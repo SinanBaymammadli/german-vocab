@@ -24,10 +24,13 @@ export function useProgress() {
       const ids = getEasyWordIds(allWords);
       const now = Date.now();
       const p = {};
-      ids.forEach(id => { p[id] = { score: 3, lastReviewed: now, auto: true }; });
+      ids.forEach(id => { p[id] = { score: 3, lastReviewed: now }; });
       saveLocal(p);
       setProgress(p);
       localStorage.setItem(INIT_KEY, '1');
+      // Sync to cloud if already signed in
+      const u = auth.currentUser;
+      if (u) scheduleSyncCloud(p, u.uid);
     });
   }, []);
 
