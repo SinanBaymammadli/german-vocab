@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>B1 German Vocabulary</title>
+  <link rel="stylesheet" href="style.11f1be84.css">
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <nav>
+        <button class="nav-btn active" id="tab-learn" onclick="showTab('learn')">Learn</button>
+        <button class="nav-btn" id="tab-learned" onclick="showTab('learned')">Learned</button>
+        <button class="nav-btn" id="tab-all" onclick="showTab('all')">All</button>
+      </nav>
+      <div class="auth-area">
+        <button class="btn sync-btn" id="auth-btn" title="Sign in to sync progress across devices">Sync</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- LEARN TAB -->
+    <div id="view-learn">
+    <div class="home-progress-bar-wrap">
+      <div class="home-progress-bar-fill" id="home-progress-bar"></div>
+    </div>
+    <p class="home-progress-label" id="home-progress-label"></p>
+
+    <div class="home-quiz-card" id="home-quiz-card">
+      <div class="home-quiz-word-row">
+        <div class="home-quiz-word" id="home-quiz-word"></div>
+        <button class="speak-btn home-speak" id="home-speak-btn">🔊</button>
+      </div>
+      <div class="quiz-choices" id="home-quiz-choices"></div>
+      <button class="reveal-link" id="home-reveal-btn">Don't know? Reveal</button>
+      <div class="home-quiz-feedback" id="home-quiz-feedback" style="display:none">
+        <div class="home-feedback-text" id="home-feedback-text"></div>
+        <div class="home-feedback-sentences" id="home-feedback-sentences"></div>
+        <div class="feedback-actions">
+          <button class="btn primary" id="home-next-btn">Next →</button>
+          <button class="btn secondary" id="home-skip-learned-btn" style="display:none">Ask me again</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-all-done" id="home-all-done" style="display:none">
+      <div class="all-done-icon">🎉</div>
+      <h2>All words learned!</h2>
+      <p>You've gone through all new words. Come back tomorrow to keep practising.</p>
+      <button class="btn secondary" id="reset-progress-btn">Reset progress</button>
+    </div>
+    </div><!-- end view-learn -->
+
+    <!-- ALL WORDS TAB -->
+    <div id="view-all" style="display:none">
+      <div class="learned-header">
+        <input type="text" id="all-search" placeholder="Search all words…" autocomplete="off">
+      </div>
+      <p class="learned-count" id="all-count"></p>
+      <div class="learned-grid" id="all-grid"></div>
+    </div>
+
+    <!-- LEARNED TAB -->
+    <div id="view-learned" style="display:none">
+      <div class="learned-header">
+        <input type="text" id="learned-search" placeholder="Search learned words…" autocomplete="off">
+      </div>
+      <p class="learned-count" id="learned-count"></p>
+      <div class="learned-grid" id="learned-grid"></div>
+    </div>
+  </main>
+
+  <!-- Word detail modal template (used by openWordModal) -->
+
+  <script src="words-data.817982a0.js"></script>
+  <script src="firebase.a3cbeddd.js"></script>
+  <script src="app.909574ee.js"></script>
+</body>
+</html>
