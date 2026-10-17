@@ -606,6 +606,42 @@ function renderStats() {
   document.getElementById('stats-correct-rate').textContent = acc;
 }
 
+function showStatsList(filter) {
+  const progress = loadProgress();
+  const section = document.getElementById('stats-word-list-section');
+  const title = document.getElementById('stats-word-list-title');
+  const list = document.getElementById('stats-word-list');
+
+  const labels = { all: 'All Words', mastered: 'Mastered Words', learning: 'Learning', new: 'New Words' };
+  title.textContent = labels[filter] || filter;
+
+  let words = WORDS_DATA;
+  if (filter !== 'all') words = words.filter(w => getStatus(progress[w.id]?.score || 0) === filter);
+
+  words = [...words].sort((a, b) => a.german.localeCompare(b.german));
+
+  list.innerHTML = '';
+  words.forEach(word => {
+    const score = progress[word.id]?.score || 0;
+    const s = getStatus(score);
+    const card = document.createElement('div');
+    card.className = 'word-card';
+    card.innerHTML = `
+      <div class="word-card-header">
+        <span class="word-card-german">${word.german}</span>
+        <span class="word-card-tag">${word.lesson}</span>
+      </div>
+      <div class="word-card-english">${word.english}</div>
+      <div class="word-status-dot ${s}" title="${s}"></div>
+    `;
+    card.addEventListener('click', () => openWordModal(word));
+    list.appendChild(card);
+  });
+
+  section.style.display = 'block';
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 document.getElementById('reset-progress-btn').addEventListener('click', () => {
   if (confirm('Reset all progress? This cannot be undone.')) {
     localStorage.removeItem(STORAGE_KEY);

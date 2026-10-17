@@ -214,22 +214,30 @@
     <section id="view-stats" class="view">
       <h2>Your Progress</h2>
       <div class="stats-overview">
-        <div class="stat-card big">
+        <div class="stat-card big clickable" onclick="showStatsList('all')">
           <span class="stat-num" id="stats-total"></span>
           <span class="stat-label">Total Words</span>
         </div>
-        <div class="stat-card big green">
+        <div class="stat-card big green clickable" onclick="showStatsList('mastered')">
           <span class="stat-num" id="stats-mastered"></span>
-          <span class="stat-label">Mastered</span>
+          <span class="stat-label">Mastered ↓</span>
         </div>
-        <div class="stat-card big blue">
+        <div class="stat-card big blue clickable" onclick="showStatsList('learning')">
           <span class="stat-num" id="stats-learning"></span>
-          <span class="stat-label">Learning</span>
+          <span class="stat-label">Learning ↓</span>
         </div>
-        <div class="stat-card big gray">
+        <div class="stat-card big gray clickable" onclick="showStatsList('new')">
           <span class="stat-num" id="stats-new"></span>
-          <span class="stat-label">New</span>
+          <span class="stat-label">New ↓</span>
         </div>
+      </div>
+
+      <div id="stats-word-list-section" style="display:none">
+        <div class="stats-word-list-header">
+          <h3 id="stats-word-list-title"></h3>
+          <button class="btn secondary small" onclick="document.getElementById('stats-word-list-section').style.display='none'">Close ✕</button>
+        </div>
+        <div class="word-list" id="stats-word-list"></div>
       </div>
 
       <div class="stats-bar-section">
