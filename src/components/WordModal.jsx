@@ -24,7 +24,7 @@ export default function WordModal({ word, isLearned, onMarkLearned, onMarkNew, o
           <div className="verb-forms">
             <span className="verb-form-item"><span className="vf-label">Prät.</span> {verbForms[0]}</span>
             <span className="verb-form-sep">·</span>
-            <span className="verb-form-item"><span className="vf-label">Part. II</span> {AUX[verbForms[2]] ?? 'hat'} {verbForms[1]}</span>
+            <span className="verb-form-item"><span className="vf-label">Perfekt</span> {AUX[verbForms[2]] ?? 'hat'} {verbForms[1]}</span>
           </div>
         )}
         <div className="modal-sentences">
