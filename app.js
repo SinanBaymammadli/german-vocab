@@ -18,10 +18,13 @@ function getStatus(score) {
 // ── Navigation ──────────────────────────────────────────────────────────────
 const views = document.querySelectorAll('.view');
 const navBtns = document.querySelectorAll('.nav-btn');
+const VALID_VIEWS = ['home', 'flashcards', 'quiz', 'browse', 'stats'];
 
-function showView(name) {
+function showView(name, pushState = true) {
+  if (!VALID_VIEWS.includes(name)) name = 'home';
   views.forEach(v => v.classList.toggle('active', v.id === `view-${name}`));
   navBtns.forEach(b => b.classList.toggle('active', b.dataset.view === name));
+  if (pushState) location.hash = name;
   if (name === 'home') renderHome();
   if (name === 'flashcards') initFlashcards();
   if (name === 'browse') renderBrowse();
@@ -29,6 +32,13 @@ function showView(name) {
 }
 
 navBtns.forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
+
+// Restore view from URL hash on load/back/forward
+function restoreFromHash() {
+  const hash = location.hash.replace('#', '') || 'home';
+  showView(hash, false);
+}
+window.addEventListener('hashchange', restoreFromHash);
 
 // ── Lessons ──────────────────────────────────────────────────────────────────
 function getLessons() {
@@ -592,5 +602,4 @@ document.getElementById('reset-progress-btn').addEventListener('click', () => {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 populateLessonSelects();
-renderHome();
-initFlashcards();
+restoreFromHash();
