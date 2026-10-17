@@ -1090,5 +1090,7 @@ const WORDS_A1 = [
   {id:3837,german:"Zwiebel",level:"A1",english:"onion",pos:"noun",sentences:[{"de": "Ich schneide eine Zwiebel für die Suppe.", "en": "I am cutting an onion for the soup."}, {"de": "Zwiebeln sind gut für die Gesundheit.", "en": "Onions are good for your health."}]},
   {id:3838,german:"Westdeutschland",level:"A1",english:"West Germany",pos:"noun",sentences:[{"de": "Meine Großeltern kommen aus Westdeutschland.", "en": "My grandparents come from West Germany."}, {"de": "Westdeutschland und Ostdeutschland wurden 1990 vereint.", "en": "West Germany and East Germany were united in 1990."}]},
   {id:3839,german:"zwischen",level:"A1",english:"between",pos:"preposition",sentences:[{"de": "Die Bank ist zwischen dem Café und dem Supermarkt.", "en": "The bank is between the café and the supermarket."}, {"de": "Sitz zwischen Anna und Tom.", "en": "Sit between Anna and Tom."}]},
+  {id:3841,german:"fröhlich",level:"A1",english:"cheerful, happy",pos:"adjective",sentences:[{"de": "Sie ist heute sehr fröhlich.", "en": "She is very cheerful today."}, {"de": "Fröhliche Kinder spielen im Park.", "en": "Happy children play in the park."}]},
+  {id:3842,german:"die Möhren",level:"A1",english:"carrots",pos:"noun (pl)",sentences:[{"de": "Ich esse gerne Möhren.", "en": "I like eating carrots."}, {"de": "Möhren sind gesund und lecker.", "en": "Carrots are healthy and delicious."}]},
 ];
 export default WORDS_A1;
