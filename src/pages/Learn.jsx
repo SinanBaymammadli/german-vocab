@@ -29,20 +29,20 @@ export default function Learn({ isLearned, markLearned, markNew, reset }) {
 
   const [word, setWord] = useState(() => pickWord(isLearned));
   const [choices, setChoices] = useState(() => word ? buildChoices(word) : []);
-  const [phase, setPhase] = useState('quiz'); // 'quiz' | 'feedback'
+  const [phase, setPhase] = useState('word'); // 'word' | 'quiz' | 'feedback'
   const [result, setResult] = useState(null); // { correct, wasCorrect }
 
   const nextWord = useCallback(() => {
     const w = pickWord(isLearned);
     setWord(w);
     setChoices(w ? buildChoices(w) : []);
-    setPhase('quiz');
+    setPhase('word');
     setResult(null);
     if (w) speakGerman(w.german);
   }, [isLearned]);
 
   useEffect(() => {
-    if (word && phase === 'quiz') speakGerman(word.german);
+    if (word) speakGerman(word.german);
   }, []);
 
   if (!word) {
@@ -81,28 +81,37 @@ export default function Learn({ isLearned, markLearned, markNew, reset }) {
           <button className="speak-btn" onClick={() => speakGerman(word.german)}>🔊</button>
         </div>
 
-        <div className="choices">
-          {choices.map(c => {
-            let cls = 'choice-btn';
-            if (phase === 'feedback') {
-              if (c.id === word.id) cls += ' correct';
-              else if (result?.chosen?.id === c.id) cls += ' wrong';
-            }
-            return (
-              <button
-                key={c.id}
-                className={cls}
-                disabled={phase === 'feedback'}
-                onClick={() => handleChoice(c)}
-              >
-                {c.english}
-              </button>
-            );
-          })}
-        </div>
+        {phase === 'word' && (
+          <button className="btn primary show-options-btn" onClick={() => setPhase('quiz')}>
+            Show options
+          </button>
+        )}
 
-        {phase === 'quiz' && (
-          <button className="reveal-link" onClick={handleReveal}>Don't know? Reveal</button>
+        {(phase === 'quiz' || phase === 'feedback') && (
+          <>
+            <div className="choices">
+              {choices.map(c => {
+                let cls = 'choice-btn';
+                if (phase === 'feedback') {
+                  if (c.id === word.id) cls += ' correct';
+                  else if (result?.chosen?.id === c.id) cls += ' wrong';
+                }
+                return (
+                  <button
+                    key={c.id}
+                    className={cls}
+                    disabled={phase === 'feedback'}
+                    onClick={() => handleChoice(c)}
+                  >
+                    {c.english}
+                  </button>
+                );
+              })}
+            </div>
+            {phase === 'quiz' && (
+              <button className="reveal-link" onClick={handleReveal}>Don't know? Reveal</button>
+            )}
+          </>
         )}
 
         {phase === 'feedback' && (
