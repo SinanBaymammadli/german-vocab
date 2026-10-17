@@ -41,7 +41,7 @@ export default function Header({ user, onSignIn, onSignOut, levels = ['B1'] }) {
           {open && (
             <div className="dropdown">
               <button className="dropdown-item" onClick={() => { navigate('/settings'); setOpen(false); }}>
-                ⚙ Settings
+                <span className="icon">⚙</span> Settings
               </button>
               <div className="dropdown-divider" />
               {user

@@ -161,6 +161,7 @@ main { max-width: 560px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
   font-size: .9rem; cursor: pointer; text-align: left;
   transition: background .15s;
 }
+.dropdown-item .icon { font-size: 1.2rem; }
 .dropdown-item:hover { background: var(--surface2); }
 .dropdown-divider { height: 1px; background: var(--border); margin: .2rem 0; }
 
