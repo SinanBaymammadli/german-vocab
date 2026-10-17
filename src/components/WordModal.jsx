@@ -2,7 +2,7 @@ import { speakGerman } from '../lib/tts';
 import { displayGerman } from '../lib/german';
 import { getVerbForms } from '../lib/verbForms';
 
-const AUX = { h: 'hat', s: 'ist', 'h/s': 'hat/ist' };
+const AUX = { h: 'haben', s: 'sein', 'h/s': 'haben/sein' };
 
 export default function WordModal({ word, isLearned, onMarkLearned, onMarkNew, onClose }) {
   const learned = isLearned(word.id);
