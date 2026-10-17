@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Learn from './pages/Learn';
@@ -25,17 +25,19 @@ export default function App() {
 
   const props = { words, progress, isLearned, markLearned, markNew };
 
+  const levelKey = settings.levels.slice().sort().join('+');
+
   return (
-    <HashRouter>
+    <BrowserRouter basename="/german-vocab">
       <Header user={user} onSignIn={signIn} onSignOut={signOut} levels={settings.levels} />
       <main>
         <Routes>
-          <Route path="/" element={<Learn {...props} reset={reset} />} />
+          <Route path="/" element={<Learn key={levelKey} {...props} reset={reset} />} />
           <Route path="/learned" element={<Learned isLearned={isLearned} markLearned={markLearned} markNew={markNew} progress={progress} />} />
           <Route path="/all" element={<All {...props} />} />
           <Route path="/settings" element={<Settings settings={settings} setLevels={setLevels} />} />
         </Routes>
       </main>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
