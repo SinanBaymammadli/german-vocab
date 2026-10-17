@@ -8,7 +8,7 @@ const p = new URLSearchParams(window.location.search).get('p');
 if (p) window.history.replaceState(null, '', '/' + decodeURIComponent(p));
 
 createRoot(document.getElementById('root')).render(
-  // <StrictMode>
+  <StrictMode>
     <App />
-  // </StrictMode>,
+  </StrictMode>,
 )
