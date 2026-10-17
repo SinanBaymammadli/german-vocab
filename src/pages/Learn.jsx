@@ -1,6 +1,21 @@
 import { useState, useCallback } from 'react';
 import { speakGerman } from '../lib/tts';
 import { displayGerman } from '../lib/german';
+import { getVerbForms } from '../lib/verbForms';
+
+const AUX = { h: 'haben', s: 'sein', 'h/s': 'haben/sein' };
+
+function VerbForms({ word }) {
+  const forms = getVerbForms(word);
+  if (!forms) return null;
+  return (
+    <div className="verb-forms" style={{ marginTop: '.6rem' }}>
+      <span className="verb-form-item"><span className="vf-label">Prät.</span> {forms[0]}</span>
+      <span className="verb-form-sep">·</span>
+      <span className="verb-form-item"><span className="vf-label">Perfekt</span> {AUX[forms[2]] ?? 'haben'} {forms[1]}</span>
+    </div>
+  );
+}
 
 function shuffle(arr) {
   const a = [...arr];
@@ -122,6 +137,7 @@ const nextWord = useCallback(() => {
                   : <><strong>{displayGerman(word)}</strong> = {word.english}</>
               }
             </p>
+            <VerbForms word={word} />
             <div className="sentences">
               {word.sentences.map((s, i) => (
                 <div key={i} className="sentence">
