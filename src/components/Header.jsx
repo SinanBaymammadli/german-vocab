@@ -43,6 +43,9 @@ export default function Header({ user, onSignIn, onSignOut, levels = ['B1'] }) {
               <button className="dropdown-item" onClick={() => { navigate('/settings'); setOpen(false); }}>
                 <span className="icon">⚙</span> Settings
               </button>
+              <button className="dropdown-item" onClick={() => { navigate('/add'); setOpen(false); }}>
+                <span className="icon">＋</span> Add word
+              </button>
               <div className="dropdown-divider" />
               {user
                 ? <button className="dropdown-item" onClick={() => { onSignOut(); setOpen(false); }}>Sign out</button>

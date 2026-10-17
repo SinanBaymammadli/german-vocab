@@ -1,4 +1,5 @@
 import WORDS_B1 from './words-b1';
+import WORDS_CUSTOM from './words-custom';
 
 let _a1 = null, _a2 = null, _b2 = null;
 
@@ -26,8 +27,10 @@ const _cache = {};
 
 export async function getWordsAsync(levels) {
   const set = new Set(levels ?? ['B1']);
-  // B1-only fast path — return the module reference directly
-  if (set.has('B1') && set.size === 1) return WORDS_B1;
+  // B1-only fast path
+  if (set.has('B1') && set.size === 1) {
+    return WORDS_CUSTOM.length ? [...WORDS_B1, ...WORDS_CUSTOM] : WORDS_B1;
+  }
 
   const key = [...set].sort().join('+');
   if (_cache[key]) return _cache[key];
@@ -37,6 +40,8 @@ export async function getWordsAsync(levels) {
   if (set.has('A2')) parts.push(await loadA2());
   if (set.has('B1')) parts.push(WORDS_B1);
   if (set.has('B2')) parts.push(await loadB2());
+  // Always append custom words at the end
+  if (WORDS_CUSTOM.length) parts.push(WORDS_CUSTOM);
   const result = parts.flat();
   _cache[key] = result;
   return result;

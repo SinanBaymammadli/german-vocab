@@ -5,6 +5,7 @@ import Learn from './pages/Learn';
 import Learned from './pages/Learned';
 import All from './pages/All';
 import Settings from './pages/Settings';
+import AddWord from './pages/AddWord';
 import { useProgress } from './hooks/useProgress';
 import { useSettings } from './hooks/useSettings';
 import { getWords, getWordsAsync } from './data/index';
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/learned" element={<Learned isLearned={isLearned} markLearned={markLearned} markNew={markNew} progress={progress} />} />
           <Route path="/all" element={<All {...props} />} />
           <Route path="/settings" element={<Settings settings={settings} setLevels={setLevels} />} />
+          <Route path="/add" element={<AddWord />} />
         </Routes>
       </main>
     </BrowserRouter>
