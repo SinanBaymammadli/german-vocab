@@ -215,7 +215,22 @@ document.getElementById('fc-filter').addEventListener('change', initFlashcards);
 document.getElementById('fc-direction').addEventListener('change', () => renderFlashcard());
 
 // ── Text-to-Speech ────────────────────────────────────────────────────────────
-// Voices load asynchronously — cache them once available
+// Primary: Google Translate TTS (always German, no API key needed)
+// Fallback: browser Web Speech API with de-DE lang hint
+let _ttsAudio = null;
+
+function speakGerman(text) {
+  if (!text) return;
+  // Stop any currently playing audio
+  if (_ttsAudio) { _ttsAudio.pause(); _ttsAudio = null; }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=de&client=tw-ob&ttsspeed=0.9`;
+  _ttsAudio = new Audio(url);
+  _ttsAudio.play().catch(() => _speakBrowserFallback(text));
+}
+
+// Cache voices for fallback
 let _voices = [];
 function _loadVoices() { _voices = window.speechSynthesis?.getVoices() || []; }
 if (window.speechSynthesis) {
@@ -223,15 +238,13 @@ if (window.speechSynthesis) {
   _loadVoices();
 }
 
-function speakGerman(text) {
+function _speakBrowserFallback(text) {
   if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'de-DE';
   utter.rate = 0.85;
-  const germanVoice = _voices.find(v => v.lang === 'de-DE') ||
-                      _voices.find(v => v.lang.startsWith('de'));
-  if (germanVoice) utter.voice = germanVoice;
+  const voice = _voices.find(v => v.lang === 'de-DE') || _voices.find(v => v.lang.startsWith('de'));
+  if (voice) utter.voice = voice;
   window.speechSynthesis.speak(utter);
 }
 
