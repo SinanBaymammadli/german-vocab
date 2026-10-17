@@ -248,24 +248,21 @@ main {
 .speak-btn:hover { opacity: 1; transform: scale(1.15); }
 
 /* ── Learned tab ── */
-.learned-header { display: flex; gap: 0.6rem; margin-bottom: 0.75rem; align-items: center; }
-.learned-header input { flex: 1; }
+.learned-header { margin-bottom: 0.75rem; }
 
-.review-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.25rem;
-  font-size: 0.85rem;
+.reveal-link {
+  background: none;
+  border: none;
   color: var(--text-muted);
+  font-size: 0.82rem;
+  cursor: pointer;
+  margin-top: 0.9rem;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  display: block;
 }
-
-.review-english {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--green);
-  margin-bottom: 1rem;
-}
+.reveal-link:hover { color: var(--text); }
 .learned-header input {
   width: 100%;
   background: var(--surface);

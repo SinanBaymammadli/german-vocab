@@ -92,6 +92,23 @@ function renderHome() {
   document.getElementById('home-quiz-word').textContent = word.german;
   document.getElementById('home-speak-btn').onclick = () => speakGerman(word.german);
   document.getElementById('home-quiz-feedback').style.display = 'none';
+  document.getElementById('home-reveal-btn').style.display = 'block';
+  document.getElementById('home-reveal-btn').onclick = () => {
+    document.getElementById('home-reveal-btn').style.display = 'none';
+    document.querySelectorAll('#home-quiz-choices .choice-btn').forEach(b => b.disabled = true);
+    // Highlight correct answer
+    document.querySelectorAll('#home-quiz-choices .choice-btn').forEach(b => {
+      if (b.textContent === word.english) b.classList.add('correct');
+    });
+    document.getElementById('home-feedback-text').innerHTML = `<strong>${word.german}</strong> = ${word.english}`;
+    document.getElementById('home-feedback-text').className = 'home-feedback-text';
+    document.getElementById('home-feedback-sentences').innerHTML = word.sentences.map(s =>
+      `<div class="home-sentence"><div class="de">${s.de}</div><div class="en">${s.en}</div></div>`
+    ).join('');
+    document.getElementById('home-quiz-feedback').style.display = 'block';
+    document.getElementById('home-skip-learned-btn').style.display = 'none';
+    document.getElementById('home-next-btn').onclick = renderHome;
+  };
 
   speakGerman(word.german);
 
@@ -112,6 +129,7 @@ function renderHome() {
 function handleHomeChoice(btn, isCorrect, word) {
   document.querySelectorAll('#home-quiz-choices .choice-btn').forEach(b => b.disabled = true);
 
+  document.getElementById('home-reveal-btn').style.display = 'none';
   const skipBtn = document.getElementById('home-skip-learned-btn');
 
   if (isCorrect) {
@@ -184,64 +202,6 @@ function renderLearned() {
 }
 
 document.getElementById('learned-search').addEventListener('input', renderLearned);
-
-// ── Learned review mode ───────────────────────────────────────────────────────
-let reviewDeck = [], reviewIndex = 0;
-
-document.getElementById('start-review-btn').addEventListener('click', () => {
-  const progress = loadProgress();
-  reviewDeck = WORDS_DATA.filter(w => isLearned(w.id))
-    .sort((a, b) => (progress[b.id]?.lastReviewed || 0) - (progress[a.id]?.lastReviewed || 0));
-  if (reviewDeck.length === 0) return;
-  reviewIndex = 0;
-  document.getElementById('learned-list-view').style.display = 'none';
-  document.getElementById('learned-review-view').style.display = 'block';
-  showReviewCard();
-});
-
-document.getElementById('stop-review-btn').addEventListener('click', () => {
-  document.getElementById('learned-review-view').style.display = 'none';
-  document.getElementById('learned-list-view').style.display = 'block';
-  renderLearned();
-});
-
-document.getElementById('reveal-btn').addEventListener('click', () => {
-  document.getElementById('review-hidden').style.display = 'none';
-  document.getElementById('review-revealed').style.display = 'block';
-});
-
-document.getElementById('review-next-btn').addEventListener('click', () => {
-  reviewIndex++;
-  if (reviewIndex >= reviewDeck.length) {
-    document.getElementById('stop-review-btn').click();
-  } else {
-    showReviewCard();
-  }
-});
-
-document.getElementById('review-ask-again-btn').addEventListener('click', () => {
-  markNew(reviewDeck[reviewIndex].id);
-  reviewDeck.splice(reviewIndex, 1);
-  if (reviewDeck.length === 0 || reviewIndex >= reviewDeck.length) {
-    document.getElementById('stop-review-btn').click();
-  } else {
-    showReviewCard();
-  }
-});
-
-function showReviewCard() {
-  const word = reviewDeck[reviewIndex];
-  document.getElementById('review-counter').textContent = `${reviewIndex + 1} / ${reviewDeck.length}`;
-  document.getElementById('review-word').textContent = word.german;
-  document.getElementById('review-speak-btn').onclick = () => speakGerman(word.german);
-  document.getElementById('review-english').textContent = word.english;
-  document.getElementById('review-sentences').innerHTML = word.sentences.map(s =>
-    `<div class="home-sentence"><div class="de">${s.de}</div><div class="en">${s.en}</div></div>`
-  ).join('');
-  document.getElementById('review-hidden').style.display = 'block';
-  document.getElementById('review-revealed').style.display = 'none';
-  speakGerman(word.german);
-}
 
 function renderAll() {
   const progress = loadProgress();

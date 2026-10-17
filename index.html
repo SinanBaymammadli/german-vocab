@@ -38,6 +38,7 @@
         <button class="speak-btn home-speak" id="home-speak-btn">🔊</button>
       </div>
       <div class="quiz-choices" id="home-quiz-choices"></div>
+      <button class="reveal-link" id="home-reveal-btn">Don't know? Reveal</button>
       <div class="home-quiz-feedback" id="home-quiz-feedback" style="display:none">
         <div class="home-feedback-text" id="home-feedback-text"></div>
         <div class="home-feedback-sentences" id="home-feedback-sentences"></div>
@@ -67,42 +68,11 @@
 
     <!-- LEARNED TAB -->
     <div id="view-learned" style="display:none">
-
-      <!-- List view -->
-      <div id="learned-list-view">
-        <div class="learned-header">
-          <input type="text" id="learned-search" placeholder="Search learned words…" autocomplete="off">
-          <button class="btn secondary" id="start-review-btn">Review ↗</button>
-        </div>
-        <p class="learned-count" id="learned-count"></p>
-        <div class="learned-grid" id="learned-grid"></div>
+      <div class="learned-header">
+        <input type="text" id="learned-search" placeholder="Search learned words…" autocomplete="off">
       </div>
-
-      <!-- Review mode -->
-      <div id="learned-review-view" style="display:none">
-        <div class="review-header">
-          <span id="review-counter"></span>
-          <button class="btn secondary small" id="stop-review-btn">✕ Exit</button>
-        </div>
-        <div class="home-quiz-card">
-          <div class="home-quiz-word-row">
-            <div class="home-quiz-word" id="review-word"></div>
-            <button class="speak-btn home-speak" id="review-speak-btn">🔊</button>
-          </div>
-          <div id="review-hidden">
-            <button class="btn secondary" id="reveal-btn">Reveal →</button>
-          </div>
-          <div id="review-revealed" style="display:none">
-            <div class="review-english" id="review-english"></div>
-            <div class="home-feedback-sentences" id="review-sentences"></div>
-            <div class="feedback-actions" style="margin-top:1rem">
-              <button class="btn primary" id="review-next-btn">Next →</button>
-              <button class="btn secondary" id="review-ask-again-btn">Ask me again</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <p class="learned-count" id="learned-count"></p>
+      <div class="learned-grid" id="learned-grid"></div>
     </div>
   </main>
 
