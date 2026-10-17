@@ -153,7 +153,7 @@ function renderLearned() {
   const search = (document.getElementById('learned-search')?.value || '').toLowerCase();
   let words = WORDS_DATA.filter(w => isLearned(w.id));
   if (search) words = words.filter(w => w.german.toLowerCase().includes(search) || w.english.toLowerCase().includes(search));
-  words.sort((a, b) => a.german.localeCompare(b.german));
+  words.sort((a, b) => (progress[b.id]?.lastReviewed || 0) - (progress[a.id]?.lastReviewed || 0));
 
   document.getElementById('learned-count').textContent = `${words.length} learned word${words.length !== 1 ? 's' : ''}`;
 
