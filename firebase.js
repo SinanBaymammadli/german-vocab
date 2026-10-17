@@ -49,9 +49,10 @@ fbAuth.onAuthStateChanged(async user => {
 
   if (user) {
     showSyncStatus('Syncing progress...');
-    await mergeCloudProgress(user.uid);
+    const changed = await mergeCloudProgress(user.uid);
     showSyncStatus('Progress synced ✓', 2000);
-    if (typeof renderHome === 'function') renderHome();
+    // Only re-render if cloud had newer data — avoids word flicker on load
+    if (changed && typeof renderHome === 'function') renderHome();
   }
 });
 
@@ -60,24 +61,27 @@ async function mergeCloudProgress(uid) {
   try {
     const doc = await fbDb.collection('users').doc(uid).collection('data').doc('progress').get();
     if (!doc.exists) {
-      // First sign-in: push local progress up to cloud
       await pushLocalToCloud(uid);
-      return;
+      return false; // nothing changed locally
     }
     const cloud = doc.data() || {};
     const local = loadLocalProgress();
     const merged = { ...local };
+    let changed = false;
 
     Object.entries(cloud).forEach(([id, data]) => {
       const localScore = local[id]?.score || 0;
-      if ((data.score || 0) > localScore) merged[id] = data;
+      if ((data.score || 0) > localScore) { merged[id] = data; changed = true; }
     });
 
-    saveLocalProgress(merged);
-    // Write merged result back to cloud
-    await fbDb.collection('users').doc(uid).collection('data').doc('progress').set(merged);
+    if (changed) {
+      saveLocalProgress(merged);
+      await fbDb.collection('users').doc(uid).collection('data').doc('progress').set(merged);
+    }
+    return changed;
   } catch (err) {
     console.error('Merge error:', err);
+    return false;
   }
 }
 
