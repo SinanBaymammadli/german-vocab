@@ -83,7 +83,6 @@ function renderHome() {
 
   const word = newWords[Math.floor(Math.random() * newWords.length)];
 
-  document.getElementById('home-quiz-lesson').textContent = word.lesson;
   document.getElementById('home-quiz-word').textContent = word.german;
   document.getElementById('home-speak-btn').onclick = () => speakGerman(word.german);
   document.getElementById('home-quiz-feedback').style.display = 'none';

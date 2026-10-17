@@ -123,33 +123,26 @@ main {
   padding: 1.75rem;
   box-shadow: var(--shadow);
 }
-.home-quiz-lesson {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  background: var(--surface2);
-  display: inline-block;
-  padding: 0.15rem 0.5rem;
-  border-radius: 5px;
-  margin-bottom: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+.home-quiz-word-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
 }
 .home-quiz-word {
   font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 0.3rem;
   line-height: 1.2;
 }
 .home-speak {
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   cursor: pointer;
-  opacity: 0.6;
+  opacity: 0.55;
   transition: opacity 0.2s;
   padding: 0.2rem;
-  margin-bottom: 1.25rem;
-  display: block;
+  flex-shrink: 0;
 }
 .home-speak:hover { opacity: 1; }
 
