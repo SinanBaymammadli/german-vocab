@@ -1039,5 +1039,6 @@ const WORDS_A2 = [
   {id:2742,german:"Wohngemeinschaft",level:"A2",english:"shared apartment / flatshare",pos:"noun (f)",sentences:[{"de": "Er wohnt in einer Wohngemeinschaft mit drei anderen.", "en": "He lives in a flatshare with three others."}, {"de": "Eine Wohngemeinschaft ist günstiger als eine eigene Wohnung.", "en": "A shared apartment is cheaper than one's own apartment."}]},
   {id:2743,german:"zwischendurch",level:"A2",english:"in between / from time to time",pos:"adverb",sentences:[{"de": "Ich esse zwischendurch ein Stück Obst.", "en": "I eat a piece of fruit in between."}, {"de": "Zwischendurch macht er eine kurze Pause.", "en": "From time to time he takes a short break."}]},
   {id:2744,german:"Wohnungsbesichtigung",level:"A2",english:"apartment viewing",pos:"noun (f)",sentences:[{"de": "Ich habe morgen eine Wohnungsbesichtigung.", "en": "I have an apartment viewing tomorrow."}, {"de": "Nach der Wohnungsbesichtigung entscheiden wir uns.", "en": "After the apartment viewing we will decide."}]},
+  {id:3840,german:"betonen",level:"A2",english:"to emphasize, to stress, to accentuate",pos:"verb",sentences:[{de:"Sie betonte noch einmal, wie wichtig das ist.",en:"She emphasized once more how important that is."},{de:"Er betonte seine Punkte sehr deutlich.",en:"He stressed his points very clearly."}]},
 ];
 export default WORDS_A2;
