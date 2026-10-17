@@ -215,15 +215,22 @@ document.getElementById('fc-filter').addEventListener('change', initFlashcards);
 document.getElementById('fc-direction').addEventListener('change', () => renderFlashcard());
 
 // ── Text-to-Speech ────────────────────────────────────────────────────────────
+// Voices load asynchronously — cache them once available
+let _voices = [];
+function _loadVoices() { _voices = window.speechSynthesis?.getVoices() || []; }
+if (window.speechSynthesis) {
+  window.speechSynthesis.addEventListener('voiceschanged', _loadVoices);
+  _loadVoices();
+}
+
 function speakGerman(text) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'de-DE';
-  utter.rate = 0.9;
-  // Prefer a German voice if available
-  const voices = window.speechSynthesis.getVoices();
-  const germanVoice = voices.find(v => v.lang.startsWith('de'));
+  utter.rate = 0.85;
+  const germanVoice = _voices.find(v => v.lang === 'de-DE') ||
+                      _voices.find(v => v.lang.startsWith('de'));
   if (germanVoice) utter.voice = germanVoice;
   window.speechSynthesis.speak(utter);
 }
