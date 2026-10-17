@@ -24,6 +24,22 @@ body {
   min-height: 100vh;
 }
 
+/* ── Nav tabs ── */
+nav { display: flex; gap: 0.3rem; }
+.nav-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  padding: 0.35rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.nav-btn:hover { background: var(--surface2); color: var(--text); }
+.nav-btn.active { background: var(--accent); color: #fff; }
+
 /* ── Header ── */
 header {
   background: var(--surface);
@@ -228,6 +244,39 @@ main {
 
 .speak-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; opacity: 0.6; transition: opacity 0.2s, transform 0.1s; padding: 0.2rem 0.4rem; border-radius: 6px; }
 .speak-btn:hover { opacity: 1; transform: scale(1.15); }
+
+/* ── Learned tab ── */
+.learned-header { margin-bottom: 0.75rem; }
+.learned-header input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+.learned-header input:focus { outline: none; border-color: var(--accent); }
+.learned-count { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+.learned-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.65rem;
+}
+.word-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.word-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.word-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.3rem; }
+.word-card-german { font-size: 0.95rem; font-weight: 600; }
+.word-card-tag { font-size: 0.68rem; background: var(--surface2); padding: 0.12rem 0.4rem; border-radius: 4px; color: var(--text-muted); flex-shrink: 0; }
+.word-card-english { font-size: 0.8rem; color: var(--text-muted); }
+.empty-msg { color: var(--text-muted); font-size: 0.9rem; padding: 1rem 0; }
 
 /* Sync toast */
 .sync-status {

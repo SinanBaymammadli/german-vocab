@@ -13,7 +13,11 @@
 <body>
   <header>
     <div class="header-inner">
-      <h1>🇩🇪 B1 German Vocabulary</h1>
+      <h1>🇩🇪 B1 German</h1>
+      <nav>
+        <button class="nav-btn active" id="tab-learn" onclick="showTab('learn')">Learn</button>
+        <button class="nav-btn" id="tab-learned" onclick="showTab('learned')">Learned</button>
+      </nav>
       <div class="auth-area">
         <span class="user-name" id="user-name"></span>
         <button class="btn sync-btn" id="auth-btn" title="Sign in to sync progress across devices">Sync progress</button>
@@ -22,6 +26,8 @@
   </header>
 
   <main>
+    <!-- LEARN TAB -->
+    <div id="view-learn">
     <div class="home-progress-bar-wrap">
       <div class="home-progress-bar-fill" id="home-progress-bar"></div>
     </div>
@@ -44,6 +50,16 @@
       <h2>All words learned!</h2>
       <p>You've gone through all new words. Come back tomorrow to keep practising.</p>
       <button class="btn secondary" id="reset-progress-btn">Reset progress</button>
+    </div>
+    </div><!-- end view-learn -->
+
+    <!-- LEARNED TAB -->
+    <div id="view-learned" style="display:none">
+      <div class="learned-header">
+        <input type="text" id="learned-search" placeholder="Search learned words…" autocomplete="off">
+      </div>
+      <p class="learned-count" id="learned-count"></p>
+      <div class="learned-grid" id="learned-grid"></div>
     </div>
   </main>
 

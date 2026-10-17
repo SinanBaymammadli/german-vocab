@@ -36,6 +36,26 @@ function _speakBrowserFallback(text) {
   window.speechSynthesis.speak(utter);
 }
 
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function showTab(tab) {
+  document.getElementById('view-learn').style.display   = tab === 'learn'   ? 'block' : 'none';
+  document.getElementById('view-learned').style.display = tab === 'learned' ? 'block' : 'none';
+  document.getElementById('tab-learn').classList.toggle('active',   tab === 'learn');
+  document.getElementById('tab-learned').classList.toggle('active', tab === 'learned');
+  location.hash = tab;
+  if (tab === 'learned') renderLearned();
+}
+
+// Restore tab from hash on load
+(function() {
+  const hash = location.hash.replace('#', '');
+  if (hash === 'learned') showTab('learned');
+  window.addEventListener('hashchange', () => {
+    const h = location.hash.replace('#', '');
+    if (h === 'learned' || h === 'learn') showTab(h);
+  });
+})();
+
 // ── Home quiz ─────────────────────────────────────────────────────────────────
 function renderHome() {
   const progress = loadProgress();
@@ -106,6 +126,39 @@ function handleHomeChoice(btn, isCorrect, word) {
   document.getElementById('home-quiz-feedback').style.display = 'block';
   document.getElementById('home-next-btn').onclick = renderHome;
 }
+
+// ── Learned words list ────────────────────────────────────────────────────────
+function renderLearned() {
+  const progress = loadProgress();
+  const search = (document.getElementById('learned-search')?.value || '').toLowerCase();
+  let words = WORDS_DATA.filter(w => (progress[w.id]?.score || 0) >= 3);
+  if (search) words = words.filter(w => w.german.toLowerCase().includes(search) || w.english.toLowerCase().includes(search));
+  words.sort((a, b) => a.german.localeCompare(b.german));
+
+  document.getElementById('learned-count').textContent = `${words.length} learned word${words.length !== 1 ? 's' : ''}`;
+
+  const grid = document.getElementById('learned-grid');
+  grid.innerHTML = '';
+  if (words.length === 0) {
+    grid.innerHTML = `<p class="empty-msg">${search ? 'No matches.' : 'No learned words yet — go learn some!'}</p>`;
+    return;
+  }
+  words.forEach(word => {
+    const card = document.createElement('div');
+    card.className = 'word-card';
+    card.innerHTML = `
+      <div class="word-card-header">
+        <span class="word-card-german">${word.german}</span>
+        <span class="word-card-tag">${word.lesson}</span>
+      </div>
+      <div class="word-card-english">${word.english}</div>
+    `;
+    card.addEventListener('click', () => openWordModal(word));
+    grid.appendChild(card);
+  });
+}
+
+document.getElementById('learned-search').addEventListener('input', renderLearned);
 
 // ── Word detail modal ─────────────────────────────────────────────────────────
 function openWordModal(word) {
