@@ -1,4 +1,5 @@
 import { speakGerman } from '../lib/tts';
+import { displayGerman } from '../lib/german';
 
 export default function WordModal({ word, isLearned, onMarkLearned, onMarkNew, onClose }) {
   const learned = isLearned(word.id);
@@ -6,7 +7,7 @@ export default function WordModal({ word, isLearned, onMarkLearned, onMarkNew, o
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal">
         <div className="modal-header">
-          <span className="modal-german">{word.german}</span>
+          <span className="modal-german">{displayGerman(word)}</span>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             <button className="speak-btn" onClick={() => speakGerman(word.german)}>🔊</button>
             <button className="modal-close" onClick={onClose}>✕</button>

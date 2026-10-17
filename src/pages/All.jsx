@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import WordModal from '../components/WordModal';
+import { displayGerman } from '../lib/german';
 
 export default function All({ words: allWords, isLearned, markLearned, markNew }) {
   const [search, setSearch] = useState('');
@@ -29,7 +30,7 @@ export default function All({ words: allWords, isLearned, markLearned, markNew }
           return (
             <div key={word.id} className="word-card" onClick={() => setModal(word)}>
               <div className="word-card-header">
-                <span className="word-card-german">{word.german}</span>
+                <span className="word-card-german">{displayGerman(word)}</span>
                 <span className={`word-card-tag level-${word.level ?? 'B1'}`}>{word.level ?? 'B1'}</span>
               </div>
               <div className={`status-dot ${learned ? 'learned' : 'new'}`} />

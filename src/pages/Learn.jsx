@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { speakGerman } from '../lib/tts';
+import { displayGerman } from '../lib/german';
 
 function shuffle(arr) {
   const a = [...arr];
@@ -84,7 +85,7 @@ export default function Learn({ words, isLearned, markLearned, markNew, reset })
 
       <div className="quiz-card">
         <div className="word-row">
-          <span className="quiz-word">{word.german}</span>
+          <span className="quiz-word">{displayGerman(word)}</span>
           <button className="speak-btn" onClick={() => speakGerman(word.german)}>🔊</button>
         </div>
 
@@ -128,10 +129,10 @@ export default function Learn({ words, isLearned, markLearned, markNew, reset })
           <div className="feedback">
             <p className={`feedback-text ${result?.wasCorrect ? 'correct-fb' : result?.chosen ? 'wrong-fb' : ''}`}>
               {result?.wasCorrect
-                ? <>✓ Correct! <strong>{word.german}</strong> = {word.english}</>
+                ? <>✓ Correct! <strong>{displayGerman(word)}</strong> = {word.english}</>
                 : result?.chosen
-                  ? <>✗ It was: <strong>{word.german}</strong> = {word.english}</>
-                  : <><strong>{word.german}</strong> = {word.english}</>
+                  ? <>✗ It was: <strong>{displayGerman(word)}</strong> = {word.english}</>
+                  : <><strong>{displayGerman(word)}</strong> = {word.english}</>
               }
             </p>
             <div className="sentences">

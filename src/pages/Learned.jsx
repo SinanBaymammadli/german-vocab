@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import WordModal from '../components/WordModal';
 import WORDS_B1 from '../data/words';
+import { displayGerman } from '../lib/german';
 
 export default function Learned({ isLearned, markLearned, markNew, progress }) {
   const [search, setSearch] = useState('');
@@ -42,7 +43,7 @@ export default function Learned({ isLearned, markLearned, markNew, progress }) {
           {words.map(word => (
             <div key={word.id} className="word-card" onClick={() => setModal(word)}>
               <div className="word-card-header">
-                <span className="word-card-german">{word.german}</span>
+                <span className="word-card-german">{displayGerman(word)}</span>
                 <button
                   className="ask-again-btn"
                   title="Ask me again"
