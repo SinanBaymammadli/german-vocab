@@ -318,6 +318,19 @@ main { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
 }
 
 .card-hint { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem; }
+
+.speak-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  margin-top: 0.4rem;
+  opacity: 0.6;
+  transition: opacity 0.2s, transform 0.1s;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+}
+.speak-btn:hover { opacity: 1; transform: scale(1.15); }
 .card-pos { color: var(--text-muted); font-size: 0.85rem; font-style: italic; margin-top: 0.4rem; }
 
 .card-sentences {

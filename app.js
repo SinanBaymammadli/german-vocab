@@ -148,6 +148,10 @@ function renderFlashcard() {
 
   document.getElementById('fc-pos').textContent = word.pos;
 
+  // Auto-speak the German word
+  const germanWord = dir === 'de-en' ? word.german : word.english;
+  if (dir === 'de-en') speakGerman(word.german);
+
   const sentDiv = document.getElementById('fc-sentences');
   sentDiv.innerHTML = word.sentences.map(s => `
     <div class="sentence">
@@ -209,6 +213,20 @@ document.getElementById('fc-shuffle-btn').addEventListener('click', () => {
 document.getElementById('fc-lesson-filter').addEventListener('change', initFlashcards);
 document.getElementById('fc-filter').addEventListener('change', initFlashcards);
 document.getElementById('fc-direction').addEventListener('change', () => renderFlashcard());
+
+// ── Text-to-Speech ────────────────────────────────────────────────────────────
+function speakGerman(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'de-DE';
+  utter.rate = 0.9;
+  // Prefer a German voice if available
+  const voices = window.speechSynthesis.getVoices();
+  const germanVoice = voices.find(v => v.lang.startsWith('de'));
+  if (germanVoice) utter.voice = germanVoice;
+  window.speechSynthesis.speak(utter);
+}
 
 // Keyboard navigation
 document.addEventListener('keydown', e => {
@@ -459,7 +477,10 @@ function openWordModal(word) {
     <div class="modal">
       <div class="modal-header">
         <span class="modal-german">${word.german}</span>
-        <button class="modal-close" id="modal-close-btn">✕</button>
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <button class="speak-btn" onclick="speakGerman('${word.german.replace(/'/g,"\\'")}')">🔊</button>
+          <button class="modal-close" id="modal-close-btn">✕</button>
+        </div>
       </div>
       <span class="modal-tag">${word.lesson}</span>
       <div class="modal-english">${word.english}</div>
