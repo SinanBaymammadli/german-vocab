@@ -33,10 +33,16 @@ function showView(name, pushState = true) {
 
 navBtns.forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
 
-// Restore view from URL hash on load/back/forward
+// Restore view (and optionally open a word modal) from URL hash
 function restoreFromHash() {
   const hash = location.hash.replace('#', '') || 'home';
-  showView(hash, false);
+  // Format: "browse/42" → view=browse, wordId=42
+  const [view, wordId] = hash.split('/');
+  showView(VALID_VIEWS.includes(view) ? view : 'home', false);
+  if (wordId) {
+    const word = WORDS_DATA.find(w => w.id === parseInt(wordId));
+    if (word) openWordModal(word, false);
+  }
 }
 window.addEventListener('hashchange', restoreFromHash);
 
@@ -496,10 +502,19 @@ document.getElementById('browse-search').addEventListener('input', renderBrowse)
 document.getElementById('browse-lesson').addEventListener('change', renderBrowse);
 document.getElementById('browse-status').addEventListener('change', renderBrowse);
 
-function openWordModal(word) {
+function openWordModal(word, updateHash = true) {
   const progress = loadProgress();
   const score = progress[word.id]?.score || 0;
   const status = getStatus(score);
+
+  // Determine which view is currently active to restore it on close
+  const currentView = location.hash.replace('#', '').split('/')[0] || 'browse';
+  if (updateHash) location.hash = `${currentView}/${word.id}`;
+
+  function closeModal() {
+    overlay.remove();
+    if (location.hash.includes('/')) location.hash = currentView;
+  }
 
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -532,14 +547,14 @@ function openWordModal(word) {
     </div>
   `;
   document.body.appendChild(overlay);
-  overlay.querySelector('#modal-close-btn').addEventListener('click', () => overlay.remove());
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  overlay.querySelector('#modal-close-btn').addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
   overlay.querySelectorAll('.mark-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const p = loadProgress();
       p[word.id] = { score: parseInt(btn.dataset.score), lastReviewed: Date.now() };
       saveProgress(p);
-      overlay.remove();
+      closeModal();
       renderBrowse();
     });
   });
