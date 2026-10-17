@@ -1,11 +1,26 @@
 import WORDS_B1 from './words';
-import WORDS_B2 from './words-b2';
 
-export const ALL_WORDS = [...WORDS_B1, ...WORDS_B2];
+// B2 is loaded lazily — only imported when the user selects B2
+let _b2 = null;
+async function loadB2() {
+  if (!_b2) {
+    const mod = await import('./words-b2');
+    _b2 = mod.default;
+  }
+  return _b2;
+}
 
 export function getWords(levels) {
-  if (!levels || levels.length === 0) return WORDS_B1;
-  const set = new Set(levels);
-  const filtered = ALL_WORDS.filter(w => set.has(w.level ?? 'B1'));
-  return filtered.length > 0 ? filtered : WORDS_B1;
+  const set = new Set(levels ?? ['B1']);
+  if (set.has('B1') && !set.has('B2')) return WORDS_B1;
+  // B2 only or both — handled async via getWordsAsync
+  return WORDS_B1; // fallback while B2 loads
+}
+
+export async function getWordsAsync(levels) {
+  const set = new Set(levels ?? ['B1']);
+  if (!set.has('B2')) return WORDS_B1;
+  const b2 = await loadB2();
+  if (set.has('B1')) return [...WORDS_B1, ...b2];
+  return b2;
 }
