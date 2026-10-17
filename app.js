@@ -3,9 +3,15 @@ function loadProgress() { return loadLocalProgress(); }
 function saveProgress(p) { saveLocalProgress(p); }
 
 function getStatus(score) {
-  if (!score || score === 0) return 'new';
-  if (score <= 2) return 'learning';
-  return 'mastered';
+  return (score && score >= 3) ? 'learned' : 'new';
+}
+function isLearned(wordId) {
+  return (loadProgress()[wordId]?.score || 0) >= 3;
+}
+function markNew(wordId) {
+  const p = loadProgress();
+  delete p[wordId];
+  saveProgress(p);
 }
 
 // ── Text-to-Speech ────────────────────────────────────────────────────────────
@@ -64,13 +70,13 @@ function showTab(tab) {
 function renderHome() {
   const progress = loadProgress();
   const total = WORDS_DATA.length;
-  const learned = WORDS_DATA.filter(w => (progress[w.id]?.score || 0) >= 3).length;
+  const learned = WORDS_DATA.filter(w => isLearned(w.id)).length;
   const pct = Math.round((learned / total) * 100);
 
   document.getElementById('home-progress-bar').style.width = pct + '%';
   document.getElementById('home-progress-label').textContent = `${learned} / ${total} words learned (${pct}%)`;
 
-  const newWords = WORDS_DATA.filter(w => (progress[w.id]?.score || 0) < 3);
+  const newWords = WORDS_DATA.filter(w => !isLearned(w.id));
 
   if (newWords.length === 0) {
     document.getElementById('home-quiz-card').style.display = 'none';
@@ -145,7 +151,7 @@ function handleHomeChoice(btn, isCorrect, word) {
 function renderLearned() {
   const progress = loadProgress();
   const search = (document.getElementById('learned-search')?.value || '').toLowerCase();
-  let words = WORDS_DATA.filter(w => (progress[w.id]?.score || 0) >= 3);
+  let words = WORDS_DATA.filter(w => isLearned(w.id));
   if (search) words = words.filter(w => w.german.toLowerCase().includes(search) || w.english.toLowerCase().includes(search));
   words.sort((a, b) => a.german.localeCompare(b.german));
 
@@ -163,10 +169,15 @@ function renderLearned() {
     card.innerHTML = `
       <div class="word-card-header">
         <span class="word-card-german">${word.german}</span>
-        <span class="word-card-tag">${word.lesson}</span>
+        <button class="ask-again-btn" title="Ask me again">↩</button>
       </div>
       <div class="word-card-english">${word.english}</div>
     `;
+    card.querySelector('.ask-again-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      markNew(word.id);
+      renderLearned();
+    });
     card.addEventListener('click', () => openWordModal(word));
     grid.appendChild(card);
   });
@@ -237,8 +248,9 @@ function openWordModal(word) {
       </div>
       <div class="modal-status">
         <span>Status: <strong>${status}</strong></span>
-        <button class="mark-btn learned" data-score="3">Mark as learned</button>
-        <button class="mark-btn mastered" data-score="4">Mark as mastered</button>
+        ${status === 'new'
+          ? `<button class="mark-btn learned" data-action="learn">Mark as learned</button>`
+          : `<button class="mark-btn ask-again-modal" data-action="new">Ask me again</button>`}
       </div>
     </div>
   `;
@@ -247,9 +259,13 @@ function openWordModal(word) {
   overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
   overlay.querySelectorAll('.mark-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const p = loadProgress();
-      p[word.id] = { score: parseInt(btn.dataset.score), lastReviewed: Date.now() };
-      saveProgress(p);
+      if (btn.dataset.action === 'learn') {
+        const p = loadProgress();
+        p[word.id] = { score: 3, lastReviewed: Date.now() };
+        saveProgress(p);
+      } else {
+        markNew(word.id);
+      }
       closeModal();
       renderHome();
     });

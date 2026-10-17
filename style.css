@@ -243,8 +243,6 @@ main {
 .mark-btn { border: none; border-radius: 8px; cursor: pointer; padding: 0.4rem 0.85rem; font-size: 0.82rem; font-weight: 600; transition: all 0.2s; }
 .mark-btn.learned { background: #14532d; color: #86efac; }
 .mark-btn.learned:hover { background: var(--green); color: #fff; }
-.mark-btn.mastered { background: #1e3a5f; color: #93c5fd; }
-.mark-btn.mastered:hover { background: var(--blue); color: #fff; }
 
 .speak-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; opacity: 0.6; transition: opacity 0.2s, transform 0.1s; padding: 0.2rem 0.4rem; border-radius: 6px; }
 .speak-btn:hover { opacity: 1; transform: scale(1.15); }
@@ -282,9 +280,24 @@ main {
 .word-card-english { font-size: 0.8rem; color: var(--text-muted); }
 .empty-msg { color: var(--text-muted); font-size: 0.9rem; padding: 1rem 0; }
 .word-status-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 0.4rem; }
-.word-status-dot.new      { background: var(--text-muted); }
-.word-status-dot.learning { background: var(--blue); }
-.word-status-dot.mastered { background: var(--green); }
+.word-status-dot.new     { background: var(--text-muted); }
+.word-status-dot.learned { background: var(--green); }
+
+.ask-again-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.ask-again-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.mark-btn.ask-again-modal { background: #1e3a5f; color: #93c5fd; }
+.mark-btn.ask-again-modal:hover { background: var(--blue); color: #fff; }
 
 /* Sync toast */
 .sync-status {
