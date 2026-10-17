@@ -15,16 +15,25 @@ function markNew(wordId) {
 }
 
 // ── Text-to-Speech ────────────────────────────────────────────────────────────
+let _ttsAudio = null;
+
+function speakGerman(text) {
+  if (!text) return;
+  if (_ttsAudio) { _ttsAudio.pause(); _ttsAudio = null; }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=de&client=tw-ob&ttsspeed=0.9`;
+  _ttsAudio = new Audio(url);
+  _ttsAudio.play().catch(() => _speakBrowserFallback(text));
+}
+
 let _voices = [];
 function _loadVoices() { _voices = window.speechSynthesis?.getVoices() || []; }
 if (window.speechSynthesis) {
   window.speechSynthesis.addEventListener('voiceschanged', _loadVoices);
   _loadVoices();
 }
-
-function speakGerman(text) {
-  if (!text || !window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
+function _speakBrowserFallback(text) {
+  if (!window.speechSynthesis) return;
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'de-DE';
   utter.rate = 0.85;
