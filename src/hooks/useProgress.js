@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { auth, db, googleProvider, signInWithPopup, signOut, onAuthStateChanged, doc, getDoc, setDoc } from '../lib/firebase';
+import { getEasyWordIds } from '../lib/easyWords';
 
 const KEY = 'b1vocab_progress';
+const INIT_KEY = 'b1vocab_initialized';
 
 function loadLocal() {
   try { return JSON.parse(localStorage.getItem(KEY)) ?? {}; } catch { return {}; }
@@ -12,6 +14,22 @@ export function useProgress() {
   const [progress, setProgress] = useState(loadLocal);
   const [user, setUser] = useState(null);
   const syncTimer = useRef(null);
+
+  // Auto-mark easy words on very first open (runs once, before anything else)
+  useEffect(() => {
+    if (localStorage.getItem(INIT_KEY)) return;
+    import('../data/index').then(({ getWordsAsync }) =>
+      getWordsAsync(['A1','A2','B1','B2'])
+    ).then(allWords => {
+      const ids = getEasyWordIds(allWords);
+      const now = Date.now();
+      const p = {};
+      ids.forEach(id => { p[id] = { score: 3, lastReviewed: now, auto: true }; });
+      saveLocal(p);
+      setProgress(p);
+      localStorage.setItem(INIT_KEY, '1');
+    });
+  }, []);
 
   // Auth listener
   useEffect(() => {
