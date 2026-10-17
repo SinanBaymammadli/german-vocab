@@ -75,41 +75,71 @@ function populateLessonSelects() {
 function renderHome() {
   const progress = loadProgress();
   const total = WORDS_DATA.length;
-  let learned = 0, mastered = 0;
-  WORDS_DATA.forEach(w => {
-    const s = progress[w.id]?.score || 0;
-    if (s >= 3) learned++;
-    if (s >= 4) mastered++;
-  });
-  document.getElementById('home-total').textContent = total;
-  document.getElementById('home-learned').textContent = learned;
-  document.getElementById('home-mastered').textContent = mastered;
+  const learned = WORDS_DATA.filter(w => (progress[w.id]?.score || 0) >= 3).length;
   const pct = Math.round((learned / total) * 100);
-  document.getElementById('home-progress-bar').style.width = pct + '%';
-  document.getElementById('home-progress-label').textContent = `${pct}% complete (${learned} / ${total} learned)`;
 
-  // Lesson grid
-  const grid = document.getElementById('lesson-grid');
-  grid.innerHTML = '';
-  getLessons().forEach(lesson => {
-    const words = WORDS_DATA.filter(w => w.lesson === lesson);
-    let learnedL = 0;
-    words.forEach(w => { if ((progress[w.id]?.score || 0) >= 3) learnedL++; });
-    const pctL = Math.round((learnedL / words.length) * 100);
-    const card = document.createElement('div');
-    card.className = 'lesson-card';
-    card.innerHTML = `
-      <h4>Lesson ${lesson.replace('L', '')}</h4>
-      <div class="lesson-count">${words.length} words · ${learnedL} learned</div>
-      <div class="lesson-prog-bar"><div class="lesson-prog-fill" style="width:${pctL}%"></div></div>
-      <div class="lesson-prog-label">${pctL}%</div>
-    `;
-    card.addEventListener('click', () => {
-      document.getElementById('fc-lesson-filter').value = lesson;
-      showView('flashcards');
-    });
-    grid.appendChild(card);
+  document.getElementById('home-progress-bar').style.width = pct + '%';
+  document.getElementById('home-progress-label').textContent = `${learned} / ${total} words learned (${pct}%)`;
+
+  const newWords = WORDS_DATA.filter(w => (progress[w.id]?.score || 0) < 3);
+
+  if (newWords.length === 0) {
+    document.getElementById('home-quiz-card').style.display = 'none';
+    document.getElementById('home-all-done').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('home-quiz-card').style.display = 'block';
+  document.getElementById('home-all-done').style.display = 'none';
+
+  // Pick a random new word
+  const word = newWords[Math.floor(Math.random() * newWords.length)];
+
+  document.getElementById('home-quiz-lesson').textContent = word.lesson;
+  document.getElementById('home-quiz-word').textContent = word.german;
+  document.getElementById('home-speak-btn').onclick = () => speakGerman(word.german);
+  document.getElementById('home-quiz-feedback').style.display = 'none';
+
+  // Build 4 choices (correct + 3 random distractors)
+  const others = WORDS_DATA.filter(w => w.id !== word.id).sort(() => Math.random() - 0.5).slice(0, 3);
+  const choices = [...others, word].sort(() => Math.random() - 0.5);
+
+  const container = document.getElementById('home-quiz-choices');
+  container.innerHTML = '';
+  choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = c.english;
+    btn.addEventListener('click', () => handleHomeChoice(btn, c.id === word.id, word));
+    container.appendChild(btn);
   });
+}
+
+function handleHomeChoice(btn, isCorrect, word) {
+  document.querySelectorAll('#home-quiz-choices .choice-btn').forEach(b => b.disabled = true);
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    const p = loadProgress();
+    p[word.id] = { score: 3, lastReviewed: Date.now() };
+    saveProgress(p);
+    document.getElementById('home-feedback-text').innerHTML = `✓ Correct! <strong>${word.german}</strong> = ${word.english}`;
+    document.getElementById('home-feedback-text').className = 'home-feedback-text correct-fb';
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('#home-quiz-choices .choice-btn').forEach(b => {
+      if (b.textContent === word.english) b.classList.add('correct');
+    });
+    document.getElementById('home-feedback-text').innerHTML = `✗ It was: <strong>${word.german}</strong> = ${word.english}`;
+    document.getElementById('home-feedback-text').className = 'home-feedback-text wrong-fb';
+  }
+
+  document.getElementById('home-feedback-sentences').innerHTML = word.sentences.map(s =>
+    `<div class="home-sentence"><div class="de">${s.de}</div><div class="en">${s.en}</div></div>`
+  ).join('');
+
+  document.getElementById('home-quiz-feedback').style.display = 'block';
+  document.getElementById('home-next-btn').onclick = renderHome;
 }
 
 function startFlashcards(lesson) {

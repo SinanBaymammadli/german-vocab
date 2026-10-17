@@ -31,36 +31,31 @@
   <main>
     <!-- HOME -->
     <section id="view-home" class="view active">
-      <div class="home-hero">
-        <h2>Master B1 German Vocabulary</h2>
-        <p>993 words from the <em>Einfach gut B1</em> vocabulary list</p>
-        <div class="home-stats">
-          <div class="stat-card">
-            <span class="stat-num" id="home-total">993</span>
-            <span class="stat-label">Total Words</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-num" id="home-learned">0</span>
-            <span class="stat-label">Learned</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-num" id="home-mastered">0</span>
-            <span class="stat-label">Mastered</span>
-          </div>
-        </div>
-        <div class="progress-bar-wrap">
-          <div class="progress-bar" id="home-progress-bar"></div>
-        </div>
-        <p class="progress-label" id="home-progress-label">0% complete</p>
-        <div class="home-actions">
-          <button class="btn primary" onclick="startFlashcards('all')">Start Flashcards</button>
-          <button class="btn secondary" onclick="startQuiz('all')">Take Quiz</button>
+      <div class="home-progress-bar-wrap">
+        <div class="home-progress-bar-fill" id="home-progress-bar"></div>
+      </div>
+      <p class="home-progress-label" id="home-progress-label"></p>
+
+      <div class="home-quiz-card" id="home-quiz-card">
+        <div class="home-quiz-lesson" id="home-quiz-lesson"></div>
+        <div class="home-quiz-word" id="home-quiz-word"></div>
+        <button class="speak-btn home-speak" id="home-speak-btn">🔊</button>
+        <div class="quiz-choices" id="home-quiz-choices"></div>
+        <div class="home-quiz-feedback" id="home-quiz-feedback" style="display:none">
+          <div class="home-feedback-text" id="home-feedback-text"></div>
+          <div class="home-feedback-sentences" id="home-feedback-sentences"></div>
+          <button class="btn primary" id="home-next-btn">Next word →</button>
         </div>
       </div>
 
-      <div class="lesson-grid-section">
-        <h3>Study by Lesson</h3>
-        <div class="lesson-grid" id="lesson-grid"></div>
+      <div class="home-all-done" id="home-all-done" style="display:none">
+        <div class="all-done-icon">🎉</div>
+        <h2>All words learned!</h2>
+        <p>You've gone through all new words. Keep practising with flashcards or take a quiz.</p>
+        <div class="home-actions">
+          <button class="btn primary" onclick="showView('flashcards')">Flashcards</button>
+          <button class="btn secondary" onclick="showView('quiz')">Quiz</button>
+        </div>
       </div>
     </section>
 
