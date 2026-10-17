@@ -42,6 +42,15 @@ function _speakBrowserFallback(text) {
   window.speechSynthesis.speak(utter);
 }
 
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 const TABS = ['learn', 'learned', 'all'];
 
@@ -112,8 +121,8 @@ function renderHome() {
 
   speakGerman(word.german);
 
-  const others = WORDS_DATA.filter(w => w.id !== word.id).sort(() => Math.random() - 0.5).slice(0, 3);
-  const choices = [...others, word].sort(() => Math.random() - 0.5);
+  const others = shuffle(WORDS_DATA.filter(w => w.id !== word.id)).slice(0, 3);
+  const choices = shuffle([...others, word]);
 
   const container = document.getElementById('home-quiz-choices');
   container.innerHTML = '';
