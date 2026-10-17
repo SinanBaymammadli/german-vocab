@@ -60,7 +60,18 @@ header {
 header h1 { font-size: 1.1rem; color: var(--accent); }
 
 .auth-area { display: flex; align-items: center; gap: 0.6rem; }
-.user-name { font-size: 0.8rem; color: var(--text-muted); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  user-select: none;
+}
 .sync-btn {
   background: transparent;
   border: 1px solid var(--border);
