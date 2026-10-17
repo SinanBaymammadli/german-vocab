@@ -277,6 +277,10 @@ main {
 .word-card-tag { font-size: 0.68rem; background: var(--surface2); padding: 0.12rem 0.4rem; border-radius: 4px; color: var(--text-muted); flex-shrink: 0; }
 .word-card-english { font-size: 0.8rem; color: var(--text-muted); }
 .empty-msg { color: var(--text-muted); font-size: 0.9rem; padding: 1rem 0; }
+.word-status-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 0.4rem; }
+.word-status-dot.new      { background: var(--text-muted); }
+.word-status-dot.learning { background: var(--blue); }
+.word-status-dot.mastered { background: var(--green); }
 
 /* Sync toast */
 .sync-status {

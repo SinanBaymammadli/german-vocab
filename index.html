@@ -16,6 +16,7 @@
       <nav>
         <button class="nav-btn active" id="tab-learn" onclick="showTab('learn')">Learn</button>
         <button class="nav-btn" id="tab-learned" onclick="showTab('learned')">Learned</button>
+        <button class="nav-btn" id="tab-all" onclick="showTab('all')">All</button>
       </nav>
       <div class="auth-area">
         <span class="user-name" id="user-name"></span>
@@ -51,6 +52,15 @@
       <button class="btn secondary" id="reset-progress-btn">Reset progress</button>
     </div>
     </div><!-- end view-learn -->
+
+    <!-- ALL WORDS TAB -->
+    <div id="view-all" style="display:none">
+      <div class="learned-header">
+        <input type="text" id="all-search" placeholder="Search all words…" autocomplete="off">
+      </div>
+      <p class="learned-count" id="all-count"></p>
+      <div class="learned-grid" id="all-grid"></div>
+    </div>
 
     <!-- LEARNED TAB -->
     <div id="view-learned" style="display:none">

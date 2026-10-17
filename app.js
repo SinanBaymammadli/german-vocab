@@ -37,22 +37,26 @@ function _speakBrowserFallback(text) {
 }
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
+const TABS = ['learn', 'learned', 'all'];
+
 function showTab(tab) {
-  document.getElementById('view-learn').style.display   = tab === 'learn'   ? 'block' : 'none';
-  document.getElementById('view-learned').style.display = tab === 'learned' ? 'block' : 'none';
-  document.getElementById('tab-learn').classList.toggle('active',   tab === 'learn');
-  document.getElementById('tab-learned').classList.toggle('active', tab === 'learned');
+  if (!TABS.includes(tab)) tab = 'learn';
+  TABS.forEach(t => {
+    document.getElementById(`view-${t}`).style.display = tab === t ? 'block' : 'none';
+    document.getElementById(`tab-${t}`).classList.toggle('active', tab === t);
+  });
   location.hash = tab;
   if (tab === 'learned') renderLearned();
+  if (tab === 'all') renderAll();
 }
 
 // Restore tab from hash on load
 (function() {
   const hash = location.hash.replace('#', '');
-  if (hash === 'learned') showTab('learned');
+  if (TABS.includes(hash)) showTab(hash);
   window.addEventListener('hashchange', () => {
     const h = location.hash.replace('#', '');
-    if (h === 'learned' || h === 'learn') showTab(h);
+    if (TABS.includes(h)) showTab(h);
   });
 })();
 
@@ -159,6 +163,36 @@ function renderLearned() {
 }
 
 document.getElementById('learned-search').addEventListener('input', renderLearned);
+
+function renderAll() {
+  const progress = loadProgress();
+  const search = (document.getElementById('all-search')?.value || '').toLowerCase();
+  let words = [...WORDS_DATA];
+  if (search) words = words.filter(w => w.german.toLowerCase().includes(search) || w.english.toLowerCase().includes(search));
+  words.sort((a, b) => a.german.localeCompare(b.german));
+
+  document.getElementById('all-count').textContent = `${words.length} word${words.length !== 1 ? 's' : ''}`;
+
+  const grid = document.getElementById('all-grid');
+  grid.innerHTML = '';
+  words.forEach(word => {
+    const s = getStatus(progress[word.id]?.score || 0);
+    const card = document.createElement('div');
+    card.className = 'word-card';
+    card.innerHTML = `
+      <div class="word-card-header">
+        <span class="word-card-german">${word.german}</span>
+        <span class="word-card-tag">${word.lesson}</span>
+      </div>
+      <div class="word-card-english">${word.english}</div>
+      <div class="word-status-dot ${s}"></div>
+    `;
+    card.addEventListener('click', () => openWordModal(word));
+    grid.appendChild(card);
+  });
+}
+
+document.getElementById('all-search').addEventListener('input', renderAll);
 
 // ── Word detail modal ─────────────────────────────────────────────────────────
 function openWordModal(word) {
