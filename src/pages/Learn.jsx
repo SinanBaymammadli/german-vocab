@@ -82,9 +82,12 @@ export default function Learn({ isLearned, markLearned, markNew, reset }) {
         </div>
 
         {phase === 'word' && (
-          <button className="btn primary show-options-btn" onClick={() => setPhase('quiz')}>
-            Show options
-          </button>
+          <div className="word-phase-actions">
+            <button className="btn primary show-options-btn" onClick={() => setPhase('quiz')}>
+              Show options
+            </button>
+            <button className="reveal-link" onClick={handleReveal}>Don't know? Reveal</button>
+          </div>
         )}
 
         {(phase === 'quiz' || phase === 'feedback') && (
