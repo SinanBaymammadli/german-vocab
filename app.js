@@ -279,6 +279,25 @@ document.addEventListener('keydown', e => {
   if (e.key === '4') document.querySelector('.rate-btn[data-score="4"]')?.click();
 });
 
+// Touch swipe on flashcard (mobile)
+(function () {
+  const el = document.getElementById('flashcard');
+  let touchStartX = 0, touchStartY = 0;
+  el.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  el.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return; // tap → handled by click
+    if (Math.abs(dx) > Math.abs(dy) * 1.5) { // horizontal swipe
+      if (dx < -40 && fcIndex < fcDeck.length - 1) { fcIndex++; renderFlashcard(); }
+      else if (dx > 40 && fcIndex > 0) { fcIndex--; renderFlashcard(); }
+    }
+  }, { passive: true });
+})();
+
 // ── QUIZ ──────────────────────────────────────────────────────────────────────
 let quizWords = [];
 let quizIndex = 0;
