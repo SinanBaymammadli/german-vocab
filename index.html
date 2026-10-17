@@ -67,11 +67,42 @@
 
     <!-- LEARNED TAB -->
     <div id="view-learned" style="display:none">
-      <div class="learned-header">
-        <input type="text" id="learned-search" placeholder="Search learned words…" autocomplete="off">
+
+      <!-- List view -->
+      <div id="learned-list-view">
+        <div class="learned-header">
+          <input type="text" id="learned-search" placeholder="Search learned words…" autocomplete="off">
+          <button class="btn secondary" id="start-review-btn">Review ↗</button>
+        </div>
+        <p class="learned-count" id="learned-count"></p>
+        <div class="learned-grid" id="learned-grid"></div>
       </div>
-      <p class="learned-count" id="learned-count"></p>
-      <div class="learned-grid" id="learned-grid"></div>
+
+      <!-- Review mode -->
+      <div id="learned-review-view" style="display:none">
+        <div class="review-header">
+          <span id="review-counter"></span>
+          <button class="btn secondary small" id="stop-review-btn">✕ Exit</button>
+        </div>
+        <div class="home-quiz-card">
+          <div class="home-quiz-word-row">
+            <div class="home-quiz-word" id="review-word"></div>
+            <button class="speak-btn home-speak" id="review-speak-btn">🔊</button>
+          </div>
+          <div id="review-hidden">
+            <button class="btn secondary" id="reveal-btn">Reveal →</button>
+          </div>
+          <div id="review-revealed" style="display:none">
+            <div class="review-english" id="review-english"></div>
+            <div class="home-feedback-sentences" id="review-sentences"></div>
+            <div class="feedback-actions" style="margin-top:1rem">
+              <button class="btn primary" id="review-next-btn">Next →</button>
+              <button class="btn secondary" id="review-ask-again-btn">Ask me again</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 

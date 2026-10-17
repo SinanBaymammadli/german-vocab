@@ -248,7 +248,24 @@ main {
 .speak-btn:hover { opacity: 1; transform: scale(1.15); }
 
 /* ── Learned tab ── */
-.learned-header { margin-bottom: 0.75rem; }
+.learned-header { display: flex; gap: 0.6rem; margin-bottom: 0.75rem; align-items: center; }
+.learned-header input { flex: 1; }
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.review-english {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--green);
+  margin-bottom: 1rem;
+}
 .learned-header input {
   width: 100%;
   background: var(--surface);
