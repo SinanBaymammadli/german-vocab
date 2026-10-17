@@ -991,6 +991,6 @@ const WORDS = [
   {id:990,german:"Zuverlässigkeit",level:"B1",english:"reliability, dependability",pos:"noun (f)",sentences:[{"de": "Zuverlässigkeit ist sehr wichtig.", "en": "Reliability is very important."}, {"de": "Er ist für seine Zuverlässigkeit bekannt.", "en": "He is known for his reliability."}]},
   {id:991,german:"zerschlagen",level:"B1",english:"to smash, to shatter, to crush, to quash",pos:"verb",sentences:[{"de": "Die Hoffnung wurde zerschlagen.", "en": "The hope was crushed."}, {"de": "Er hat die Vase zerschlagen.", "en": "He smashed the vase."}]},
   {id:992,german:"zerstören",level:"B1",english:"to destroy, to demolish, to ruin",pos:"verb",sentences:[{"de": "Der Krieg hat die Stadt zerstört.", "en": "The war destroyed the city."}, {"de": "Bitte zerstöre das nicht.", "en": "Please don't destroy that."}]},
-  {id:3840,german:"betonen",level:"B1",english:"to emphasize, to stress, to accentuate",pos:"verb",sentences:[{de:"Sie betonte noch einmal, wie wichtig das ist.",en:"She emphasized once more how important that is."},{de:"Er betonte seine Punkte sehr deutlich.",en:"He stressed his points very clearly."}]},
+  {id:3840,german:"betonen",level:"A2",english:"to emphasize, to stress, to accentuate",pos:"verb",sentences:[{de:"Sie betonte noch einmal, wie wichtig das ist.",en:"She emphasized once more how important that is."},{de:"Er betonte seine Punkte sehr deutlich.",en:"He stressed his points very clearly."}]},
 ];
 export default WORDS;
