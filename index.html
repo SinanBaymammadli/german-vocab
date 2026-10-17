@@ -14,13 +14,6 @@
   <header>
     <div class="header-inner">
       <h1>🇩🇪 B1 German Vocabulary</h1>
-      <nav>
-        <button class="nav-btn active" data-view="home">Home</button>
-        <button class="nav-btn" data-view="flashcards">Flashcards</button>
-        <button class="nav-btn" data-view="quiz">Quiz</button>
-        <button class="nav-btn" data-view="browse">Browse</button>
-        <button class="nav-btn" data-view="stats">Stats</button>
-      </nav>
       <div class="auth-area">
         <span class="user-name" id="user-name"></span>
         <button class="btn sync-btn" id="auth-btn" title="Sign in to sync progress across devices">Sync progress</button>
@@ -29,235 +22,32 @@
   </header>
 
   <main>
-    <!-- HOME -->
-    <section id="view-home" class="view active">
-      <div class="home-progress-bar-wrap">
-        <div class="home-progress-bar-fill" id="home-progress-bar"></div>
+    <div class="home-progress-bar-wrap">
+      <div class="home-progress-bar-fill" id="home-progress-bar"></div>
+    </div>
+    <p class="home-progress-label" id="home-progress-label"></p>
+
+    <div class="home-quiz-card" id="home-quiz-card">
+      <div class="home-quiz-lesson" id="home-quiz-lesson"></div>
+      <div class="home-quiz-word" id="home-quiz-word"></div>
+      <button class="speak-btn home-speak" id="home-speak-btn">🔊</button>
+      <div class="quiz-choices" id="home-quiz-choices"></div>
+      <div class="home-quiz-feedback" id="home-quiz-feedback" style="display:none">
+        <div class="home-feedback-text" id="home-feedback-text"></div>
+        <div class="home-feedback-sentences" id="home-feedback-sentences"></div>
+        <button class="btn primary" id="home-next-btn">Next word →</button>
       </div>
-      <p class="home-progress-label" id="home-progress-label"></p>
+    </div>
 
-      <div class="home-quiz-card" id="home-quiz-card">
-        <div class="home-quiz-lesson" id="home-quiz-lesson"></div>
-        <div class="home-quiz-word" id="home-quiz-word"></div>
-        <button class="speak-btn home-speak" id="home-speak-btn">🔊</button>
-        <div class="quiz-choices" id="home-quiz-choices"></div>
-        <div class="home-quiz-feedback" id="home-quiz-feedback" style="display:none">
-          <div class="home-feedback-text" id="home-feedback-text"></div>
-          <div class="home-feedback-sentences" id="home-feedback-sentences"></div>
-          <button class="btn primary" id="home-next-btn">Next word →</button>
-        </div>
-      </div>
-
-      <div class="home-all-done" id="home-all-done" style="display:none">
-        <div class="all-done-icon">🎉</div>
-        <h2>All words learned!</h2>
-        <p>You've gone through all new words. Keep practising with flashcards or take a quiz.</p>
-        <div class="home-actions">
-          <button class="btn primary" onclick="showView('flashcards')">Flashcards</button>
-          <button class="btn secondary" onclick="showView('quiz')">Quiz</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- FLASHCARDS -->
-    <section id="view-flashcards" class="view">
-      <div class="flashcard-controls">
-        <select id="fc-lesson-filter">
-          <option value="all">All Lessons</option>
-        </select>
-        <select id="fc-direction">
-          <option value="de-en">German → English</option>
-          <option value="en-de">English → German</option>
-        </select>
-        <select id="fc-filter">
-          <option value="all">All Words</option>
-          <option value="unlearned">Not yet learned</option>
-          <option value="review">Needs review</option>
-        </select>
-        <button class="btn secondary small" id="fc-shuffle-btn">Shuffle</button>
-      </div>
-
-      <div class="fc-progress-row">
-        <span id="fc-card-counter">Card 1 / 993</span>
-        <div class="fc-progress-bar-wrap">
-          <div class="fc-progress-bar" id="fc-progress-bar"></div>
-        </div>
-      </div>
-
-      <div class="flashcard-area">
-        <button class="arrow-btn" id="fc-prev">&#8592;</button>
-
-        <div class="flashcard" id="flashcard" onclick="flipCard()">
-          <div class="flashcard-inner" id="flashcard-inner">
-            <div class="flashcard-front">
-              <div class="card-lesson" id="fc-lesson-tag"></div>
-              <div class="card-word" id="fc-front-word"></div>
-              <button class="speak-btn" id="fc-speak-btn" title="Listen" onclick="event.stopPropagation(); speakGerman(document.getElementById('fc-front-word').textContent)">🔊</button>
-              <div class="card-hint">click to reveal</div>
-            </div>
-            <div class="flashcard-back">
-              <div class="card-word" id="fc-back-word"></div>
-              <div class="card-pos" id="fc-pos"></div>
-              <div class="card-sentences" id="fc-sentences"></div>
-            </div>
-          </div>
-        </div>
-
-        <button class="arrow-btn" id="fc-next">&#8594;</button>
-      </div>
-
-      <div class="fc-rating" id="fc-rating" style="display:none">
-        <p>How well did you know this?</p>
-        <button class="rate-btn red" data-score="1">Again</button>
-        <button class="rate-btn orange" data-score="2">Hard</button>
-        <button class="rate-btn blue" data-score="3">Good</button>
-        <button class="rate-btn green" data-score="4">Easy</button>
-      </div>
-    </section>
-
-    <!-- QUIZ -->
-    <section id="view-quiz" class="view">
-      <div class="quiz-setup" id="quiz-setup">
-        <h2>Quiz Settings</h2>
-        <div class="quiz-options">
-          <label>Lesson:
-            <select id="quiz-lesson-filter">
-              <option value="all">All Lessons</option>
-            </select>
-          </label>
-          <label>Question type:
-            <select id="quiz-type">
-              <option value="de-en">German → English (choose meaning)</option>
-              <option value="en-de">English → German (choose word)</option>
-              <option value="fill">Fill in the blank</option>
-            </select>
-          </label>
-          <label>Questions:
-            <select id="quiz-count">
-              <option value="10">10</option>
-              <option value="20" selected>20</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-          </label>
-        </div>
-        <button class="btn primary" id="start-quiz-btn">Start Quiz</button>
-      </div>
-
-      <div class="quiz-active" id="quiz-active" style="display:none">
-        <div class="quiz-header">
-          <span id="quiz-progress-text">Question 1 / 20</span>
-          <span id="quiz-score-text">Score: 0</span>
-        </div>
-        <div class="quiz-progress-bar-wrap">
-          <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
-        </div>
-
-        <div class="quiz-card">
-          <div class="quiz-question-label" id="quiz-question-label"></div>
-          <div class="quiz-question" id="quiz-question"></div>
-          <div class="quiz-context" id="quiz-context"></div>
-
-          <!-- Multiple choice -->
-          <div class="quiz-choices" id="quiz-choices"></div>
-
-          <!-- Fill in blank -->
-          <div class="quiz-fill" id="quiz-fill" style="display:none">
-            <input type="text" id="quiz-fill-input" placeholder="Type the German word..." autocomplete="off">
-            <button class="btn primary" id="quiz-fill-submit">Check</button>
-          </div>
-
-          <div class="quiz-feedback" id="quiz-feedback" style="display:none">
-            <div class="feedback-text" id="feedback-text"></div>
-            <button class="btn primary" id="quiz-next-btn">Next</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="quiz-results" id="quiz-results" style="display:none">
-        <h2>Quiz Complete!</h2>
-        <div class="result-score">
-          <span id="result-percent">0%</span>
-          <span id="result-fraction">0/0</span>
-        </div>
-        <div id="result-message"></div>
-        <button class="btn primary" onclick="restartQuiz()">Try Again</button>
-        <button class="btn secondary" onclick="showView('home')">Home</button>
-        <div class="wrong-answers-section" id="wrong-answers-section"></div>
-      </div>
-    </section>
-
-    <!-- BROWSE -->
-    <section id="view-browse" class="view">
-      <div class="browse-controls">
-        <input type="text" id="browse-search" placeholder="Search words..." autocomplete="off">
-        <select id="browse-lesson">
-          <option value="all">All Lessons</option>
-        </select>
-        <select id="browse-status">
-          <option value="all">All Status</option>
-          <option value="new">New</option>
-          <option value="learning">Learning</option>
-          <option value="mastered">Mastered</option>
-        </select>
-      </div>
-      <div class="browse-count" id="browse-count"></div>
-      <div class="word-list" id="word-list"></div>
-    </section>
-
-    <!-- STATS -->
-    <section id="view-stats" class="view">
-      <h2>Your Progress</h2>
-      <div class="stats-overview">
-        <div class="stat-card big clickable" onclick="showStatsList('all')">
-          <span class="stat-num" id="stats-total"></span>
-          <span class="stat-label">Total Words</span>
-        </div>
-        <div class="stat-card big green clickable" onclick="showStatsList('mastered')">
-          <span class="stat-num" id="stats-mastered"></span>
-          <span class="stat-label">Mastered</span>
-        </div>
-        <div class="stat-card big blue clickable" onclick="showStatsList('learning')">
-          <span class="stat-num" id="stats-learning"></span>
-          <span class="stat-label">Learning</span>
-        </div>
-        <div class="stat-card big gray clickable" onclick="showStatsList('new')">
-          <span class="stat-num" id="stats-new"></span>
-          <span class="stat-label">New</span>
-        </div>
-      </div>
-
-      <div class="stats-bar-section">
-        <h3>Overall Progress</h3>
-        <div class="big-progress-wrap">
-          <div class="big-progress-bar" id="stats-big-progress"></div>
-        </div>
-        <p id="stats-progress-label"></p>
-      </div>
-
-      <div class="lesson-stats" id="lesson-stats"></div>
-
-      <div class="streak-section">
-        <h3>Activity</h3>
-        <div class="streak-info">
-          <div class="stat-card">
-            <span class="stat-num" id="stats-quizzes"></span>
-            <span class="stat-label">Quizzes Taken</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-num" id="stats-cards-seen"></span>
-            <span class="stat-label">Cards Reviewed</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-num" id="stats-correct-rate"></span>
-            <span class="stat-label">Quiz Accuracy</span>
-          </div>
-        </div>
-      </div>
-
-      <button class="btn danger" id="reset-progress-btn">Reset All Progress</button>
-    </section>
+    <div class="home-all-done" id="home-all-done" style="display:none">
+      <div class="all-done-icon">🎉</div>
+      <h2>All words learned!</h2>
+      <p>You've gone through all new words. Come back tomorrow to keep practising.</p>
+      <button class="btn secondary" id="reset-progress-btn">Reset progress</button>
+    </div>
   </main>
+
+  <!-- Word detail modal template (used by openWordModal) -->
 
   <script src="words-data.js"></script>
   <script src="firebase.js"></script>

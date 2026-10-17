@@ -54,12 +54,7 @@ fbAuth.onAuthStateChanged(async user => {
     showSyncStatus('Syncing progress...');
     await mergeCloudProgress(user.uid);
     showSyncStatus('Progress synced ✓', 2000);
-    // Refresh views
     if (typeof renderHome === 'function') renderHome();
-    if (typeof renderStats === 'function') {
-      const statsView = document.getElementById('view-stats');
-      if (statsView?.classList.contains('active')) renderStats();
-    }
   }
 });
 

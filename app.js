@@ -1,77 +1,42 @@
-// Progress — delegates to firebase.js (which handles local + optional cloud sync)
-const STATS_KEY = 'b1vocab_stats';
-
+// Progress — delegates to firebase.js (local + optional cloud sync)
 function loadProgress() { return loadLocalProgress(); }
 function saveProgress(p) { saveLocalProgress(p); }
-function loadStats() {
-  try { return JSON.parse(localStorage.getItem(STATS_KEY)) || { quizzes: 0, cardsReviewed: 0, correctAnswers: 0, totalAnswers: 0 }; } catch { return { quizzes: 0, cardsReviewed: 0, correctAnswers: 0, totalAnswers: 0 }; }
-}
-function saveStats(s) { localStorage.setItem(STATS_KEY, JSON.stringify(s)); }
 
-// score: 0=new, 1=again, 2=hard, 3=good, 4=easy(mastered)
 function getStatus(score) {
   if (!score || score === 0) return 'new';
   if (score <= 2) return 'learning';
   return 'mastered';
 }
 
-// ── Navigation ──────────────────────────────────────────────────────────────
-const views = document.querySelectorAll('.view');
-const navBtns = document.querySelectorAll('.nav-btn');
-const VALID_VIEWS = ['home', 'flashcards', 'quiz', 'browse', 'stats'];
+// ── Text-to-Speech ────────────────────────────────────────────────────────────
+let _ttsAudio = null;
 
-function showView(name, pushState = true) {
-  if (!VALID_VIEWS.includes(name)) name = 'home';
-  views.forEach(v => v.classList.toggle('active', v.id === `view-${name}`));
-  navBtns.forEach(b => b.classList.toggle('active', b.dataset.view === name));
-  if (pushState) location.hash = name;
-  if (name === 'home') renderHome();
-  if (name === 'flashcards') initFlashcards();
-  if (name === 'browse') renderBrowse();
-  if (name === 'stats') renderStats();
+function speakGerman(text) {
+  if (!text) return;
+  if (_ttsAudio) { _ttsAudio.pause(); _ttsAudio = null; }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=de&client=tw-ob&ttsspeed=0.9`;
+  _ttsAudio = new Audio(url);
+  _ttsAudio.play().catch(() => _speakBrowserFallback(text));
 }
 
-navBtns.forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
-
-// Restore view (and optionally open a word modal) from URL hash
-function restoreFromHash() {
-  const hash = location.hash.replace('#', '') || 'home';
-  // Format: "browse/42" → view=browse, wordId=42
-  const [view, wordId] = hash.split('/');
-  showView(VALID_VIEWS.includes(view) ? view : 'home', false);
-  if (wordId) {
-    const word = WORDS_DATA.find(w => w.id === parseInt(wordId));
-    if (word) openWordModal(word, false);
-  }
+let _voices = [];
+function _loadVoices() { _voices = window.speechSynthesis?.getVoices() || []; }
+if (window.speechSynthesis) {
+  window.speechSynthesis.addEventListener('voiceschanged', _loadVoices);
+  _loadVoices();
 }
-window.addEventListener('hashchange', restoreFromHash);
-
-// ── Lessons ──────────────────────────────────────────────────────────────────
-function getLessons() {
-  const lessons = [...new Set(WORDS_DATA.map(w => w.lesson))].sort((a, b) => {
-    const n1 = parseInt(a.replace('L', ''));
-    const n2 = parseInt(b.replace('L', ''));
-    return n1 - n2;
-  });
-  return lessons;
+function _speakBrowserFallback(text) {
+  if (!window.speechSynthesis) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'de-DE';
+  utter.rate = 0.85;
+  const voice = _voices.find(v => v.lang === 'de-DE') || _voices.find(v => v.lang.startsWith('de'));
+  if (voice) utter.voice = voice;
+  window.speechSynthesis.speak(utter);
 }
 
-function populateLessonSelects() {
-  const lessons = getLessons();
-  const selects = document.querySelectorAll('#fc-lesson-filter, #quiz-lesson-filter, #browse-lesson');
-  selects.forEach(sel => {
-    const current = sel.value;
-    while (sel.children.length > 1) sel.removeChild(sel.lastChild);
-    lessons.forEach(l => {
-      const o = document.createElement('option');
-      o.value = l; o.textContent = `Lesson ${l.replace('L', '')}`;
-      sel.appendChild(o);
-    });
-    if (current) sel.value = current;
-  });
-}
-
-// ── HOME ─────────────────────────────────────────────────────────────────────
+// ── Home quiz ─────────────────────────────────────────────────────────────────
 function renderHome() {
   const progress = loadProgress();
   const total = WORDS_DATA.length;
@@ -92,7 +57,6 @@ function renderHome() {
   document.getElementById('home-quiz-card').style.display = 'block';
   document.getElementById('home-all-done').style.display = 'none';
 
-  // Pick a random new word
   const word = newWords[Math.floor(Math.random() * newWords.length)];
 
   document.getElementById('home-quiz-lesson').textContent = word.lesson;
@@ -100,7 +64,8 @@ function renderHome() {
   document.getElementById('home-speak-btn').onclick = () => speakGerman(word.german);
   document.getElementById('home-quiz-feedback').style.display = 'none';
 
-  // Build 4 choices (correct + 3 random distractors)
+  speakGerman(word.german);
+
   const others = WORDS_DATA.filter(w => w.id !== word.id).sort(() => Math.random() - 0.5).slice(0, 3);
   const choices = [...others, word].sort(() => Math.random() - 0.5);
 
@@ -142,428 +107,13 @@ function handleHomeChoice(btn, isCorrect, word) {
   document.getElementById('home-next-btn').onclick = renderHome;
 }
 
-function startFlashcards(lesson) {
-  if (lesson !== 'all') document.getElementById('fc-lesson-filter').value = lesson;
-  showView('flashcards');
-}
-
-function startQuiz(lesson) {
-  if (lesson !== 'all') document.getElementById('quiz-lesson-filter').value = lesson;
-  showView('quiz');
-}
-
-// ── FLASHCARDS ────────────────────────────────────────────────────────────────
-let fcDeck = [];
-let fcIndex = 0;
-let fcFlipped = false;
-
-function getFilteredWords(lessonVal, filterVal) {
-  const progress = loadProgress();
-  let words = WORDS_DATA;
-  if (lessonVal !== 'all') words = words.filter(w => w.lesson === lessonVal);
-  if (filterVal === 'unlearned') words = words.filter(w => (progress[w.id]?.score || 0) < 3);
-  if (filterVal === 'review') words = words.filter(w => { const s = progress[w.id]?.score || 0; return s === 1 || s === 2; });
-  return words;
-}
-
-function initFlashcards() {
-  const lesson = document.getElementById('fc-lesson-filter').value;
-  const filter = document.getElementById('fc-filter').value;
-  fcDeck = getFilteredWords(lesson, filter);
-  if (fcDeck.length === 0) fcDeck = WORDS_DATA;
-  fcIndex = 0;
-  renderFlashcard();
-}
-
-function renderFlashcard() {
-  if (fcDeck.length === 0) return;
-  const word = fcDeck[fcIndex];
-  const dir = document.getElementById('fc-direction').value;
-
-  document.getElementById('fc-card-counter').textContent = `Card ${fcIndex + 1} / ${fcDeck.length}`;
-  document.getElementById('fc-progress-bar').style.width = `${((fcIndex + 1) / fcDeck.length) * 100}%`;
-  document.getElementById('fc-lesson-tag').textContent = word.lesson;
-
-  if (dir === 'de-en') {
-    document.getElementById('fc-front-word').textContent = word.german;
-    document.getElementById('fc-back-word').textContent = word.english;
-  } else {
-    document.getElementById('fc-front-word').textContent = word.english;
-    document.getElementById('fc-back-word').textContent = word.german;
-  }
-
-  document.getElementById('fc-pos').textContent = word.pos;
-
-  // Auto-speak the German word
-  const germanWord = dir === 'de-en' ? word.german : word.english;
-  if (dir === 'de-en') speakGerman(word.german);
-
-  const sentDiv = document.getElementById('fc-sentences');
-  sentDiv.innerHTML = word.sentences.map(s => `
-    <div class="sentence">
-      <div class="de">${s.de}</div>
-      <div class="en">${s.en}</div>
-    </div>
-  `).join('');
-
-  // Reset flip
-  fcFlipped = false;
-  document.getElementById('flashcard-inner').classList.remove('flipped');
-  document.getElementById('fc-rating').style.display = 'none';
-
-  // Update stats
-  const stats = loadStats();
-  stats.cardsReviewed++;
-  saveStats(stats);
-}
-
-function flipCard() {
-  if (!fcFlipped) {
-    fcFlipped = true;
-    document.getElementById('flashcard-inner').classList.add('flipped');
-    document.getElementById('fc-rating').style.display = 'flex';
-  }
-}
-
-document.getElementById('fc-prev').addEventListener('click', () => {
-  if (fcIndex > 0) { fcIndex--; renderFlashcard(); }
-});
-document.getElementById('fc-next').addEventListener('click', () => {
-  if (fcIndex < fcDeck.length - 1) { fcIndex++; renderFlashcard(); }
-});
-
-document.querySelectorAll('.rate-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const score = parseInt(btn.dataset.score);
-    const word = fcDeck[fcIndex];
-    const progress = loadProgress();
-    progress[word.id] = { score, lastReviewed: Date.now() };
-    saveProgress(progress);
-
-    if (fcIndex < fcDeck.length - 1) {
-      fcIndex++;
-      renderFlashcard();
-    } else {
-      document.getElementById('fc-rating').style.display = 'none';
-      alert(`You've reached the end of the deck! (${fcDeck.length} cards)`);
-    }
-  });
-});
-
-document.getElementById('fc-shuffle-btn').addEventListener('click', () => {
-  fcDeck = [...fcDeck].sort(() => Math.random() - 0.5);
-  fcIndex = 0;
-  renderFlashcard();
-});
-
-document.getElementById('fc-lesson-filter').addEventListener('change', initFlashcards);
-document.getElementById('fc-filter').addEventListener('change', initFlashcards);
-document.getElementById('fc-direction').addEventListener('change', () => renderFlashcard());
-
-// ── Text-to-Speech ────────────────────────────────────────────────────────────
-// Primary: Google Translate TTS (always German, no API key needed)
-// Fallback: browser Web Speech API with de-DE lang hint
-let _ttsAudio = null;
-
-function speakGerman(text) {
-  if (!text) return;
-  // Stop any currently playing audio
-  if (_ttsAudio) { _ttsAudio.pause(); _ttsAudio = null; }
-  if (window.speechSynthesis) window.speechSynthesis.cancel();
-
-  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=de&client=tw-ob&ttsspeed=0.9`;
-  _ttsAudio = new Audio(url);
-  _ttsAudio.play().catch(() => _speakBrowserFallback(text));
-}
-
-// Cache voices for fallback
-let _voices = [];
-function _loadVoices() { _voices = window.speechSynthesis?.getVoices() || []; }
-if (window.speechSynthesis) {
-  window.speechSynthesis.addEventListener('voiceschanged', _loadVoices);
-  _loadVoices();
-}
-
-function _speakBrowserFallback(text) {
-  if (!window.speechSynthesis) return;
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'de-DE';
-  utter.rate = 0.85;
-  const voice = _voices.find(v => v.lang === 'de-DE') || _voices.find(v => v.lang.startsWith('de'));
-  if (voice) utter.voice = voice;
-  window.speechSynthesis.speak(utter);
-}
-
-// Keyboard navigation
-document.addEventListener('keydown', e => {
-  if (!document.getElementById('view-flashcards').classList.contains('active')) return;
-  if (e.key === 'ArrowRight' || e.key === ' ') {
-    e.preventDefault();
-    if (!fcFlipped) flipCard();
-    else if (fcIndex < fcDeck.length - 1) { fcIndex++; renderFlashcard(); }
-  }
-  if (e.key === 'ArrowLeft') { if (fcIndex > 0) { fcIndex--; renderFlashcard(); } }
-  if (e.key === '1') document.querySelector('.rate-btn[data-score="1"]')?.click();
-  if (e.key === '2') document.querySelector('.rate-btn[data-score="2"]')?.click();
-  if (e.key === '3') document.querySelector('.rate-btn[data-score="3"]')?.click();
-  if (e.key === '4') document.querySelector('.rate-btn[data-score="4"]')?.click();
-});
-
-// Touch swipe on flashcard (mobile)
-(function () {
-  const el = document.getElementById('flashcard');
-  let touchStartX = 0, touchStartY = 0;
-  el.addEventListener('touchstart', e => {
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-  }, { passive: true });
-  el.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    const dy = e.changedTouches[0].clientY - touchStartY;
-    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return; // tap → handled by click
-    if (Math.abs(dx) > Math.abs(dy) * 1.5) { // horizontal swipe
-      if (dx < -40 && fcIndex < fcDeck.length - 1) { fcIndex++; renderFlashcard(); }
-      else if (dx > 40 && fcIndex > 0) { fcIndex--; renderFlashcard(); }
-    }
-  }, { passive: true });
-})();
-
-// ── QUIZ ──────────────────────────────────────────────────────────────────────
-let quizWords = [];
-let quizIndex = 0;
-let quizScore = 0;
-let quizWrong = [];
-let quizTotal = 20;
-
-document.getElementById('start-quiz-btn').addEventListener('click', () => {
-  const lesson = document.getElementById('quiz-lesson-filter').value;
-  quizTotal = parseInt(document.getElementById('quiz-count').value);
-  let pool = lesson === 'all' ? WORDS_DATA : WORDS_DATA.filter(w => w.lesson === lesson);
-  quizWords = [...pool].sort(() => Math.random() - 0.5).slice(0, Math.min(quizTotal, pool.length));
-  quizIndex = 0;
-  quizScore = 0;
-  quizWrong = [];
-  document.getElementById('quiz-setup').style.display = 'none';
-  document.getElementById('quiz-active').style.display = 'block';
-  document.getElementById('quiz-results').style.display = 'none';
-  renderQuizQuestion();
-});
-
-function renderQuizQuestion() {
-  if (quizIndex >= quizWords.length) { showQuizResults(); return; }
-  const word = quizWords[quizIndex];
-  const type = document.getElementById('quiz-type').value;
-  const total = quizWords.length;
-
-  document.getElementById('quiz-progress-text').textContent = `Question ${quizIndex + 1} / ${total}`;
-  document.getElementById('quiz-score-text').textContent = `Score: ${quizScore}`;
-  document.getElementById('quiz-progress-bar').style.width = `${(quizIndex / total) * 100}%`;
-  document.getElementById('quiz-feedback').style.display = 'none';
-  document.getElementById('quiz-fill').style.display = 'none';
-  document.getElementById('quiz-choices').innerHTML = '';
-
-  if (type === 'fill') {
-    document.getElementById('quiz-question-label').textContent = 'Translate to German:';
-    document.getElementById('quiz-question').textContent = word.english;
-    document.getElementById('quiz-context').textContent = word.sentences[0]?.en || '';
-    document.getElementById('quiz-fill').style.display = 'flex';
-    document.getElementById('quiz-fill-input').value = '';
-    document.getElementById('quiz-fill-input').className = '';
-    document.getElementById('quiz-fill-input').focus();
-  } else {
-    // Multiple choice
-    const isDeEn = type === 'de-en';
-    document.getElementById('quiz-question-label').textContent = isDeEn ? 'What does this mean?' : 'Which word means:';
-    document.getElementById('quiz-question').textContent = isDeEn ? word.german : word.english;
-    document.getElementById('quiz-context').textContent = '';
-
-    // Build 4 choices
-    const others = WORDS_DATA.filter(w => w.id !== word.id).sort(() => Math.random() - 0.5).slice(0, 3);
-    const choices = [...others, word].sort(() => Math.random() - 0.5);
-
-    const container = document.getElementById('quiz-choices');
-    choices.forEach(c => {
-      const btn = document.createElement('button');
-      btn.className = 'choice-btn';
-      btn.textContent = isDeEn ? c.english : c.german;
-      btn.addEventListener('click', () => handleChoice(btn, c.id === word.id, word, isDeEn ? word.english : word.german));
-      container.appendChild(btn);
-    });
-  }
-}
-
-function handleChoice(btn, isCorrect, word, correctAnswer) {
-  document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
-  const stats = loadStats();
-  stats.totalAnswers++;
-
-  if (isCorrect) {
-    btn.classList.add('correct');
-    quizScore++;
-    stats.correctAnswers++;
-    showFeedback(true, word);
-  } else {
-    btn.classList.add('wrong');
-    // highlight correct
-    document.querySelectorAll('.choice-btn').forEach(b => {
-      if (b.textContent === correctAnswer) b.classList.add('correct');
-    });
-    quizWrong.push({ word, yourAnswer: btn.textContent });
-    showFeedback(false, word);
-  }
-  saveStats(stats);
-  updateWordScore(word.id, isCorrect);
-}
-
-document.getElementById('quiz-fill-submit').addEventListener('click', () => handleFill());
-document.getElementById('quiz-fill-input').addEventListener('keydown', e => { if (e.key === 'Enter') handleFill(); });
-
-function handleFill() {
-  const input = document.getElementById('quiz-fill-input');
-  const word = quizWords[quizIndex];
-  const answer = input.value.trim().toLowerCase();
-  const correct = word.german.toLowerCase().replace('/in', '').trim();
-  const isCorrect = answer === correct || answer === word.german.toLowerCase();
-
-  const stats = loadStats();
-  stats.totalAnswers++;
-
-  if (isCorrect) {
-    input.className = 'correct';
-    quizScore++;
-    stats.correctAnswers++;
-  } else {
-    input.className = 'wrong';
-    quizWrong.push({ word, yourAnswer: input.value });
-  }
-  saveStats(stats);
-  input.disabled = true;
-  document.getElementById('quiz-fill-submit').disabled = true;
-  updateWordScore(word.id, isCorrect);
-  showFeedback(isCorrect, word);
-}
-
-function updateWordScore(wordId, isCorrect) {
-  const progress = loadProgress();
-  const cur = progress[wordId]?.score || 0;
-  const newScore = isCorrect ? Math.min(cur + 1, 4) : Math.max(cur - 1, 1);
-  progress[wordId] = { score: newScore, lastReviewed: Date.now() };
-  saveProgress(progress);
-}
-
-function showFeedback(isCorrect, word) {
-  const fb = document.getElementById('quiz-feedback');
-  const text = document.getElementById('feedback-text');
-  fb.style.display = 'block';
-  text.className = `feedback-text ${isCorrect ? 'correct-fb' : 'wrong-fb'}`;
-  if (isCorrect) {
-    text.innerHTML = `✓ Correct! <strong>${word.german}</strong> = ${word.english}`;
-  } else {
-    text.innerHTML = `✗ The correct answer was: <strong>${word.german}</strong> = ${word.english}<br><em>${word.sentences[0]?.de || ''}</em>`;
-  }
-}
-
-document.getElementById('quiz-next-btn').addEventListener('click', () => {
-  quizIndex++;
-  document.getElementById('quiz-score-text').textContent = `Score: ${quizScore}`;
-  document.getElementById('quiz-fill-input').disabled = false;
-  document.getElementById('quiz-fill-submit').disabled = false;
-  renderQuizQuestion();
-});
-
-function showQuizResults() {
-  const stats = loadStats();
-  stats.quizzes++;
-  saveStats(stats);
-
-  document.getElementById('quiz-active').style.display = 'none';
-  document.getElementById('quiz-results').style.display = 'block';
-  const total = quizWords.length;
-  const pct = Math.round((quizScore / total) * 100);
-  document.getElementById('result-percent').textContent = pct + '%';
-  document.getElementById('result-fraction').textContent = `${quizScore} / ${total} correct`;
-
-  const messages = [
-    [90, '🏆 Outstanding! You really know your B1 vocab!'],
-    [70, '👍 Great job! Keep practicing!'],
-    [50, '📚 Good effort! Review the missed words.'],
-    [0, '💪 Keep going! Practice makes perfect.'],
-  ];
-  const msg = messages.find(([min]) => pct >= min);
-  document.getElementById('result-message').textContent = msg[1];
-
-  if (quizWrong.length > 0) {
-    const sec = document.getElementById('wrong-answers-section');
-    sec.innerHTML = `<h3>Words to review (${quizWrong.length}):</h3>` +
-      quizWrong.map(({ word, yourAnswer }) => `
-        <div class="wrong-answer-item">
-          <div class="wa-german">${word.german}</div>
-          <div class="wa-english">${word.english}</div>
-          <div class="wa-your">Your answer: ${yourAnswer}</div>
-        </div>
-      `).join('');
-  } else {
-    document.getElementById('wrong-answers-section').innerHTML = '<p style="color:var(--green)">Perfect score! 🎉</p>';
-  }
-}
-
-function restartQuiz() {
-  document.getElementById('quiz-setup').style.display = 'block';
-  document.getElementById('quiz-active').style.display = 'none';
-  document.getElementById('quiz-results').style.display = 'none';
-}
-
-// ── BROWSE ────────────────────────────────────────────────────────────────────
-function renderBrowse() {
-  const search = document.getElementById('browse-search').value.toLowerCase();
-  const lesson = document.getElementById('browse-lesson').value;
-  const status = document.getElementById('browse-status').value;
-  const progress = loadProgress();
-
-  let words = WORDS_DATA;
-  if (search) words = words.filter(w => w.german.toLowerCase().includes(search) || w.english.toLowerCase().includes(search));
-  if (lesson !== 'all') words = words.filter(w => w.lesson === lesson);
-  if (status !== 'all') words = words.filter(w => getStatus(progress[w.id]?.score || 0) === status);
-
-  document.getElementById('browse-count').textContent = `Showing ${words.length} of ${WORDS_DATA.length} words`;
-
-  const list = document.getElementById('word-list');
-  list.innerHTML = '';
-  words.forEach(word => {
-    const score = progress[word.id]?.score || 0;
-    const s = getStatus(score);
-    const card = document.createElement('div');
-    card.className = 'word-card';
-    card.innerHTML = `
-      <div class="word-card-header">
-        <span class="word-card-german">${word.german}</span>
-        <span class="word-card-tag">${word.lesson}</span>
-      </div>
-      <div class="word-card-english">${word.english}</div>
-      <div class="word-status-dot ${s}" title="${s}"></div>
-    `;
-    card.addEventListener('click', () => openWordModal(word));
-    list.appendChild(card);
-  });
-}
-
-document.getElementById('browse-search').addEventListener('input', renderBrowse);
-document.getElementById('browse-lesson').addEventListener('change', renderBrowse);
-document.getElementById('browse-status').addEventListener('change', renderBrowse);
-
-function openWordModal(word, updateHash = true) {
+// ── Word detail modal ─────────────────────────────────────────────────────────
+function openWordModal(word) {
   const progress = loadProgress();
   const score = progress[word.id]?.score || 0;
   const status = getStatus(score);
 
-  // Determine which view is currently active to restore it on close
-  const currentView = location.hash.replace('#', '').split('/')[0] || 'browse';
-  if (updateHash) location.hash = `${currentView}/${word.id}`;
-
-  function closeModal() {
-    overlay.remove();
-    if (location.hash.includes('/')) location.hash = currentView;
-  }
+  function closeModal() { overlay.remove(); }
 
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
@@ -604,108 +154,18 @@ function openWordModal(word, updateHash = true) {
       p[word.id] = { score: parseInt(btn.dataset.score), lastReviewed: Date.now() };
       saveProgress(p);
       closeModal();
-      renderBrowse();
+      renderHome();
     });
   });
 }
 
-// ── STATS ─────────────────────────────────────────────────────────────────────
-function renderStats() {
-  const progress = loadProgress();
-  const stats = loadStats();
-  let mastered = 0, learning = 0, newCount = 0;
-
-  WORDS_DATA.forEach(w => {
-    const s = getStatus(progress[w.id]?.score || 0);
-    if (s === 'mastered') mastered++;
-    else if (s === 'learning') learning++;
-    else newCount++;
-  });
-
-  const total = WORDS_DATA.length;
-  document.getElementById('stats-total').textContent = total;
-  document.getElementById('stats-mastered').textContent = mastered;
-  document.getElementById('stats-learning').textContent = learning;
-  document.getElementById('stats-new').textContent = newCount;
-
-  const pct = Math.round(((mastered + learning) / total) * 100);
-  document.getElementById('stats-big-progress').style.width = pct + '%';
-  document.getElementById('stats-progress-label').textContent = `${pct}% started · ${Math.round((mastered / total) * 100)}% mastered`;
-
-  // Lesson breakdown
-  const lessonStats = document.getElementById('lesson-stats');
-  lessonStats.innerHTML = '<h3>Progress by Lesson</h3>';
-  getLessons().forEach(lesson => {
-    const words = WORDS_DATA.filter(w => w.lesson === lesson);
-    let done = 0;
-    words.forEach(w => { if ((progress[w.id]?.score || 0) >= 3) done++; });
-    const pctL = Math.round((done / words.length) * 100);
-    lessonStats.innerHTML += `
-      <div class="lesson-stat-row">
-        <span class="lesson-stat-name">${lesson}</span>
-        <div class="lesson-stat-bar-wrap"><div class="lesson-stat-fill" style="width:${pctL}%"></div></div>
-        <span class="lesson-stat-pct">${pctL}%</span>
-      </div>
-    `;
-  });
-
-  document.getElementById('stats-quizzes').textContent = stats.quizzes;
-  document.getElementById('stats-cards-seen').textContent = stats.cardsReviewed;
-  const acc = stats.totalAnswers > 0 ? Math.round((stats.correctAnswers / stats.totalAnswers) * 100) + '%' : 'N/A';
-  document.getElementById('stats-correct-rate').textContent = acc;
-}
-
-function showStatsList(filter) {
-  const progress = loadProgress();
-  const labels = { all: 'All Words', mastered: 'Mastered', learning: 'Learning', new: 'New' };
-
-  let words = WORDS_DATA;
-  if (filter !== 'all') words = words.filter(w => getStatus(progress[w.id]?.score || 0) === filter);
-  words = [...words].sort((a, b) => a.german.localeCompare(b.german));
-
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
-  overlay.innerHTML = `
-    <div class="modal stats-list-modal">
-      <div class="modal-header" style="margin-bottom:1rem">
-        <span style="font-size:1.1rem;font-weight:700">${labels[filter]} (${words.length})</span>
-        <button class="modal-close" id="stats-list-close">✕</button>
-      </div>
-      <div class="word-list" id="stats-list-grid"></div>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-
-  const grid = overlay.querySelector('#stats-list-grid');
-  words.forEach(word => {
-    const s = getStatus(progress[word.id]?.score || 0);
-    const card = document.createElement('div');
-    card.className = 'word-card';
-    card.innerHTML = `
-      <div class="word-card-header">
-        <span class="word-card-german">${word.german}</span>
-        <span class="word-card-tag">${word.lesson}</span>
-      </div>
-      <div class="word-card-english">${word.english}</div>
-      <div class="word-status-dot ${s}" title="${s}"></div>
-    `;
-    card.addEventListener('click', () => { overlay.remove(); openWordModal(word); });
-    grid.appendChild(card);
-  });
-
-  overlay.querySelector('#stats-list-close').addEventListener('click', () => overlay.remove());
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
-}
-
+// ── Reset ─────────────────────────────────────────────────────────────────────
 document.getElementById('reset-progress-btn').addEventListener('click', () => {
   if (confirm('Reset all progress? This cannot be undone.')) {
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(STATS_KEY);
-    renderStats();
-    alert('Progress reset.');
+    localStorage.removeItem('b1vocab_progress');
+    renderHome();
   }
 });
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-populateLessonSelects();
-restoreFromHash();
+renderHome();
