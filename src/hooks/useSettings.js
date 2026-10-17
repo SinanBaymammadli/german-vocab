@@ -16,7 +16,7 @@ export function useSettings() {
   }
 
   function setLevels(levels) {
-    if (levels.length === 0) return; // always keep at least one
+    if (!levels || levels.length === 0) return;
     save({ ...settings, levels });
   }
 
