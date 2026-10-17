@@ -627,22 +627,28 @@ function renderStats() {
 
 function showStatsList(filter) {
   const progress = loadProgress();
-  const section = document.getElementById('stats-word-list-section');
-  const title = document.getElementById('stats-word-list-title');
-  const list = document.getElementById('stats-word-list');
-
-  const labels = { all: 'All Words', mastered: 'Mastered Words', learning: 'Learning', new: 'New Words' };
-  title.textContent = labels[filter] || filter;
+  const labels = { all: 'All Words', mastered: 'Mastered', learning: 'Learning', new: 'New' };
 
   let words = WORDS_DATA;
   if (filter !== 'all') words = words.filter(w => getStatus(progress[w.id]?.score || 0) === filter);
-
   words = [...words].sort((a, b) => a.german.localeCompare(b.german));
 
-  list.innerHTML = '';
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal stats-list-modal">
+      <div class="modal-header" style="margin-bottom:1rem">
+        <span style="font-size:1.1rem;font-weight:700">${labels[filter]} (${words.length})</span>
+        <button class="modal-close" id="stats-list-close">✕</button>
+      </div>
+      <div class="word-list" id="stats-list-grid"></div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const grid = overlay.querySelector('#stats-list-grid');
   words.forEach(word => {
-    const score = progress[word.id]?.score || 0;
-    const s = getStatus(score);
+    const s = getStatus(progress[word.id]?.score || 0);
     const card = document.createElement('div');
     card.className = 'word-card';
     card.innerHTML = `
@@ -653,12 +659,12 @@ function showStatsList(filter) {
       <div class="word-card-english">${word.english}</div>
       <div class="word-status-dot ${s}" title="${s}"></div>
     `;
-    card.addEventListener('click', () => openWordModal(word));
-    list.appendChild(card);
+    card.addEventListener('click', () => { overlay.remove(); openWordModal(word); });
+    grid.appendChild(card);
   });
 
-  section.style.display = 'block';
-  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  overlay.querySelector('#stats-list-close').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
 }
 
 document.getElementById('reset-progress-btn').addEventListener('click', () => {

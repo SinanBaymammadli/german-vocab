@@ -571,15 +571,12 @@ main { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
 .stat-card.clickable { cursor: pointer; transition: all 0.2s; }
 .stat-card.clickable:hover { border-color: var(--accent); transform: translateY(-2px); }
 
-.stats-word-list-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border);
+.stats-list-modal {
+  max-width: 760px;
+  max-height: 85vh;
+  overflow-y: auto;
+  width: 100%;
 }
-#stats-word-list-section { margin-bottom: 2rem; }
 
 /* Word detail modal */
 .modal-overlay {
