@@ -41,7 +41,6 @@ export default function Learned({ isLearned, markLearned, markNew, progress }) {
                   onClick={e => { e.stopPropagation(); markNew(word.id); }}
                 >↩</button>
               </div>
-              <div className="word-card-english">{word.english}</div>
             </div>
           ))}
         </div>

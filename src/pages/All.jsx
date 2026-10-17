@@ -33,7 +33,6 @@ export default function All({ isLearned, markLearned, markNew }) {
                 <span className="word-card-german">{word.german}</span>
                 <span className="word-card-tag">{word.lesson}</span>
               </div>
-              <div className="word-card-english">{word.english}</div>
               <div className={`status-dot ${learned ? 'learned' : 'new'}`} />
             </div>
           );
