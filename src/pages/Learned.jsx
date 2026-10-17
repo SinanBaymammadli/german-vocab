@@ -1,9 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import WordModal from '../components/WordModal';
+import WORDS_B1 from '../data/words';
 
-export default function Learned({ words: allWords, isLearned, markLearned, markNew, progress }) {
+export default function Learned({ isLearned, markLearned, markNew, progress }) {
   const [search, setSearch] = useState('');
   const [modal, setModal] = useState(null);
+  const [allWords, setAllWords] = useState(WORDS_B1);
+
+  // Always load all words (B1 + B2) regardless of current level setting
+  useEffect(() => {
+    import('../data/words-b2').then(m => {
+      setAllWords([...WORDS_B1, ...m.default]);
+    });
+  }, []);
 
   let words = allWords.filter(w => isLearned(w.id));
   if (search) {

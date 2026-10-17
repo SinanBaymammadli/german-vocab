@@ -29,7 +29,7 @@ export default function App() {
       <main>
         <Routes>
           <Route path="/" element={<Learn {...props} reset={reset} />} />
-          <Route path="/learned" element={<Learned {...props} />} />
+          <Route path="/learned" element={<Learned isLearned={isLearned} markLearned={markLearned} markNew={markNew} progress={progress} />} />
           <Route path="/all" element={<All {...props} />} />
           <Route path="/settings" element={<Settings settings={settings} setLevels={setLevels} />} />
         </Routes>
