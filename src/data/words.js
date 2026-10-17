@@ -1,4 +1,4 @@
-const WORDS_DATA = [
+const WORDS = [
   {id:1,german:"Ärger",lesson:"L2",english:"anger, trouble, annoyance",pos:"noun (m)",sentences:[{"de": "Das macht mir viel Ärger.", "en": "That causes me a lot of trouble."}, {"de": "Sein Verhalten hat großen Ärger ausgelöst.", "en": "His behaviour caused great annoyance."}]},
   {id:2,german:"ärgerlich",lesson:"L2",english:"annoying; angry",pos:"adjective",sentences:[{"de": "Es ist ärgerlich, dass der Zug zu spät kommt.", "en": "It is annoying that the train is late."}, {"de": "Er war sehr ärgerlich über den Fehler.", "en": "He was very angry about the mistake."}]},
   {id:3,german:"abdecken",lesson:"L11",english:"to cover; to uncover",pos:"verb",sentences:[{"de": "Bitte decken Sie die Wunde ab.", "en": "Please cover the wound."}, {"de": "Die Versicherung deckt diesen Schaden ab.", "en": "The insurance covers this damage."}]},
@@ -992,3 +992,4 @@ const WORDS_DATA = [
   {id:991,german:"zerschlagen",lesson:"L6",english:"to smash, to shatter, to crush, to quash",pos:"verb",sentences:[{"de": "Die Hoffnung wurde zerschlagen.", "en": "The hope was crushed."}, {"de": "Er hat die Vase zerschlagen.", "en": "He smashed the vase."}]},
   {id:992,german:"zerstören",lesson:"L3",english:"to destroy, to demolish, to ruin",pos:"verb",sentences:[{"de": "Der Krieg hat die Stadt zerstört.", "en": "The war destroyed the city."}, {"de": "Bitte zerstöre das nicht.", "en": "Please don't destroy that."}]},
 ];
+export default WORDS;
