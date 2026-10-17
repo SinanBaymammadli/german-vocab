@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import WordModal from '../components/WordModal';
-import WORDS_B1 from '../data/words';
+import WORDS_B1 from '../data/words-b1';
 import { displayGerman } from '../lib/german';
 
 export default function Learned({ isLearned, markLearned, markNew, progress }) {

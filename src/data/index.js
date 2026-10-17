@@ -1,4 +1,4 @@
-import WORDS_B1 from './words';
+import WORDS_B1 from './words-b1';
 
 let _a1 = null, _a2 = null, _b2 = null;
 
