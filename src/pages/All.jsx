@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import WORDS from '../data/words';
 import WordModal from '../components/WordModal';
 
-export default function All({ isLearned, markLearned, markNew }) {
+export default function All({ words: allWords, isLearned, markLearned, markNew }) {
   const [search, setSearch] = useState('');
   const [modal, setModal] = useState(null);
 
-  let words = [...WORDS].sort((a, b) => a.german.localeCompare(b.german));
+  let words = [...allWords].sort((a, b) => a.german.localeCompare(b.german));
   if (search) {
     const q = search.toLowerCase();
     words = words.filter(w => w.german.toLowerCase().includes(q) || w.english.toLowerCase().includes(q));

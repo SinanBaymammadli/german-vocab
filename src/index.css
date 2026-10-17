@@ -124,6 +124,18 @@ main { max-width: 560px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
 .mark-btn.ask-again-modal { background: #1e3a5f; color: #93c5fd; }
 .mark-btn.ask-again-modal:hover { background: var(--blue); color: #fff; }
 
+/* Settings */
+.settings-page h2 { font-size: 1.4rem; margin-bottom: 1.5rem; }
+.settings-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; }
+.settings-section h3 { margin-bottom: .4rem; font-size: 1rem; }
+.settings-hint { color: var(--muted); font-size: .85rem; margin-bottom: 1rem; }
+.settings-note { color: var(--muted); font-size: .82rem; margin-top: .75rem; }
+.level-picker { display: flex; gap: .6rem; }
+.level-btn { padding: .5rem 1.4rem; border: 2px solid var(--border); border-radius: 8px; background: var(--surface2); color: var(--muted); font-size: .95rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+.level-btn.active { border-color: var(--accent); background: var(--accent); color: #fff; }
+.level-btn:not(.active):hover { border-color: var(--accent); color: var(--accent); }
+.level-badge { font-size: .72rem; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); padding: .15rem .45rem; border-radius: 5px; font-weight: 600; }
+
 /* Mobile */
 @media (max-width: 480px) {
   .header-inner { height: auto; padding: .6rem 1rem; }

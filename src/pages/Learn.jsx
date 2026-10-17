@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import WORDS from '../data/words';
 import { speakGerman } from '../lib/tts';
 
 function shuffle(arr) {
@@ -11,31 +10,31 @@ function shuffle(arr) {
   return a;
 }
 
-function pickWord(isLearned) {
-  const pool = WORDS.filter(w => !isLearned(w.id));
+function pickWord(words, isLearned) {
+  const pool = words.filter(w => !isLearned(w.id));
   if (!pool.length) return null;
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function buildChoices(word) {
-  const others = shuffle(WORDS.filter(w => w.id !== word.id)).slice(0, 3);
+function buildChoices(words, word) {
+  const others = shuffle(words.filter(w => w.id !== word.id)).slice(0, 3);
   return shuffle([...others, word]);
 }
 
-export default function Learn({ isLearned, markLearned, markNew, reset }) {
-  const total = WORDS.length;
-  const learnedCount = WORDS.filter(w => isLearned(w.id)).length;
+export default function Learn({ words, isLearned, markLearned, markNew, reset }) {
+  const total = words.length;
+  const learnedCount = words.filter(w => isLearned(w.id)).length;
   const pct = Math.round((learnedCount / total) * 100);
 
-  const [word, setWord] = useState(() => pickWord(isLearned));
-  const [choices, setChoices] = useState(() => word ? buildChoices(word) : []);
+  const [word, setWord] = useState(() => pickWord(words, isLearned));
+  const [choices, setChoices] = useState(() => word ? buildChoices(words, word) : []);
   const [phase, setPhase] = useState('word'); // 'word' | 'quiz' | 'feedback'
   const [result, setResult] = useState(null); // { correct, wasCorrect }
 
   const nextWord = useCallback(() => {
-    const w = pickWord(isLearned);
+    const w = pickWord(words, isLearned);
     setWord(w);
-    setChoices(w ? buildChoices(w) : []);
+    setChoices(w ? buildChoices(words, w) : []);
     setPhase('word');
     setResult(null);
   }, [isLearned]);
