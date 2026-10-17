@@ -18,7 +18,7 @@ export default function Settings({ settings, setLevels }) {
         <h3>Vocabulary level</h3>
         <p className="settings-hint">Select one or more levels to study.</p>
         <div className="level-picker">
-          {['A2', 'B1', 'B2'].map(level => (
+          {['A1', 'A2', 'B1', 'B2'].map(level => (
             <button
               key={level}
               className={`level-btn${levels.includes(level) ? ' active' : ''}`}
