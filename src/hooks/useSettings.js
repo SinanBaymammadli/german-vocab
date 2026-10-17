@@ -29,7 +29,11 @@ export function useSettings() {
         const snap = await getDoc(doc(db, 'users', user.uid, 'data', 'settings'));
         if (snap.exists()) {
           const cloud = snap.data();
-          saveLocal(cloud);
+          // Only update if levels actually differ from local
+          const local = loadLocal();
+          const same = JSON.stringify([...(local.levels ?? [])].sort()) ===
+                        JSON.stringify([...(cloud.levels ?? [])].sort());
+          if (!same) saveLocal(cloud);
         } else {
           // First sign-in: push local settings to cloud
           await saveCloud(user.uid, loadLocal());

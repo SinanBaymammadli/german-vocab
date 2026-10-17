@@ -17,7 +17,9 @@ export default function App() {
   // Load B2 data lazily when levels include B2
   useEffect(() => {
     let active = true;
-    getWordsAsync(settings.levels).then(w => { if (active) setWords(w); });
+    getWordsAsync(settings.levels).then(w => {
+      if (active) setWords(prev => prev === w ? prev : w);
+    });
     return () => { active = false; };
   }, [settings.levels]);
 
