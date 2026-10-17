@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { speakGerman } from '../lib/tts';
 
 function shuffle(arr) {
@@ -29,7 +29,20 @@ export default function Learn({ words, isLearned, markLearned, markNew, reset })
   const [word, setWord] = useState(() => pickWord(words, isLearned));
   const [choices, setChoices] = useState(() => word ? buildChoices(words, word) : []);
   const [phase, setPhase] = useState('word'); // 'word' | 'quiz' | 'feedback'
-  const [result, setResult] = useState(null); // { correct, wasCorrect }
+  const [result, setResult] = useState(null);
+
+  // Re-pick when the word list changes (e.g. B2 finishes loading)
+  const prevWordsRef = useRef(words);
+  useEffect(() => {
+    if (prevWordsRef.current !== words) {
+      prevWordsRef.current = words;
+      const w = pickWord(words, isLearned);
+      setWord(w);
+      setChoices(w ? buildChoices(words, w) : []);
+      setPhase('word');
+      setResult(null);
+    }
+  }, [words]);
 
   const nextWord = useCallback(() => {
     const w = pickWord(words, isLearned);
