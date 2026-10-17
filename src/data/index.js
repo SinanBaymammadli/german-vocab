@@ -1,26 +1,27 @@
 import WORDS_B1 from './words';
 
-// B2 is loaded lazily — only imported when the user selects B2
-let _b2 = null;
+let _a2 = null, _b2 = null;
+
+async function loadA2() {
+  if (!_a2) { const m = await import('./words-a2'); _a2 = m.default; }
+  return _a2;
+}
 async function loadB2() {
-  if (!_b2) {
-    const mod = await import('./words-b2');
-    _b2 = mod.default;
-  }
+  if (!_b2) { const m = await import('./words-b2'); _b2 = m.default; }
   return _b2;
 }
 
 export function getWords(levels) {
   const set = new Set(levels ?? ['B1']);
-  if (set.has('B1') && !set.has('B2')) return WORDS_B1;
-  // B2 only or both — handled async via getWordsAsync
-  return WORDS_B1; // fallback while B2 loads
+  if (set.has('B1') && !set.has('A2') && !set.has('B2')) return WORDS_B1;
+  return WORDS_B1; // sync fallback while async loads
 }
 
 export async function getWordsAsync(levels) {
   const set = new Set(levels ?? ['B1']);
-  if (!set.has('B2')) return WORDS_B1;
-  const b2 = await loadB2();
-  if (set.has('B1')) return [...WORDS_B1, ...b2];
-  return b2;
+  const parts = [];
+  if (set.has('A2')) parts.push(await loadA2());
+  if (set.has('B1')) parts.push(WORDS_B1);
+  if (set.has('B2')) parts.push(await loadB2());
+  return parts.length ? parts.flat() : WORDS_B1;
 }
