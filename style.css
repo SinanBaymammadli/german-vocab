@@ -183,7 +183,7 @@ main {
 .home-sentence .de { font-weight: 500; margin-bottom: 0.15rem; }
 .home-sentence .en { color: var(--text-muted); }
 
-#home-next-btn { margin-top: 1rem; }
+.feedback-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
 
 /* All done */
 .home-all-done {

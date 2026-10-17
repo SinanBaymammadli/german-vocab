@@ -106,6 +106,8 @@ function renderHome() {
 function handleHomeChoice(btn, isCorrect, word) {
   document.querySelectorAll('#home-quiz-choices .choice-btn').forEach(b => b.disabled = true);
 
+  const skipBtn = document.getElementById('home-skip-learned-btn');
+
   if (isCorrect) {
     btn.classList.add('correct');
     const p = loadProgress();
@@ -113,6 +115,14 @@ function handleHomeChoice(btn, isCorrect, word) {
     saveProgress(p);
     document.getElementById('home-feedback-text').innerHTML = `✓ Correct! <strong>${word.german}</strong> = ${word.english}`;
     document.getElementById('home-feedback-text').className = 'home-feedback-text correct-fb';
+    // Show "Ask me again" to undo accidental correct answer
+    skipBtn.style.display = 'inline-flex';
+    skipBtn.onclick = () => {
+      const p = loadProgress();
+      delete p[word.id];
+      saveProgress(p);
+      renderHome();
+    };
   } else {
     btn.classList.add('wrong');
     document.querySelectorAll('#home-quiz-choices .choice-btn').forEach(b => {
@@ -120,6 +130,7 @@ function handleHomeChoice(btn, isCorrect, word) {
     });
     document.getElementById('home-feedback-text').innerHTML = `✗ It was: <strong>${word.german}</strong> = ${word.english}`;
     document.getElementById('home-feedback-text').className = 'home-feedback-text wrong-fb';
+    skipBtn.style.display = 'none';
   }
 
   document.getElementById('home-feedback-sentences').innerHTML = word.sentences.map(s =>
