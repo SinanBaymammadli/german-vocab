@@ -30,7 +30,7 @@ export default function All({ words: allWords, isLearned, markLearned, markNew }
             <div key={word.id} className="word-card" onClick={() => setModal(word)}>
               <div className="word-card-header">
                 <span className="word-card-german">{word.german}</span>
-                <span className="word-card-tag">{word.lesson}</span>
+                <span className={`word-card-tag level-${word.level ?? 'B1'}`}>{word.level ?? 'B1'}</span>
               </div>
               <div className={`status-dot ${learned ? 'learned' : 'new'}`} />
             </div>

@@ -12,7 +12,7 @@ export default function WordModal({ word, isLearned, onMarkLearned, onMarkNew, o
             <button className="modal-close" onClick={onClose}>✕</button>
           </div>
         </div>
-        <span className="modal-tag">{word.lesson}</span>
+        <span className={`modal-tag level-${word.level ?? 'B1'}`}>{word.level ?? 'B1'}</span>
         <div className="modal-english">{word.english}</div>
         <div className="modal-pos">{word.pos}</div>
         <div className="modal-sentences">
