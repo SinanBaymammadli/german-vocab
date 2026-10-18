@@ -43,11 +43,14 @@ export default function Learned({ isLearned, markLearned, markNew, progress }) {
             <div key={word.id} className="word-card" onClick={() => setModal(word)}>
               <div className="word-card-header">
                 <span className="word-card-german">{displayGerman(word)}</span>
-                <button
-                  className="ask-again-btn"
-                  title="Ask me again"
-                  onClick={e => { e.stopPropagation(); markNew(word.id); }}
-                >↩</button>
+                <div style={{display:'flex',gap:'.35rem',alignItems:'center'}}>
+                  <span className={`word-card-tag level-${word.level ?? 'B1'}`}>{word.level ?? 'B1'}</span>
+                  <button
+                    className="ask-again-btn"
+                    title="Ask me again"
+                    onClick={e => { e.stopPropagation(); markNew(word.id); }}
+                  >↩</button>
+                </div>
               </div>
             </div>
           ))}
