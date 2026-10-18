@@ -137,11 +137,31 @@ const IRREGULAR = {
   'aufnehmen':   ['nahm auf', 'aufgenommen', 'h'],
 };
 
-// Strip separable prefix and reflexive "sich" to find base verb
+// Separable prefixes (longest first to avoid greedy mismatch)
+const SEP_PREFIXES = [
+  'zusammen','zurück','weiter','wieder','voraus','voran','vor','weg',
+  'unter','um','über','statt','rück','raus','rauf','ran','mit','los',
+  'hin','hervor','herüber','heraus','herunter','herein','herab','her',
+  'hinzu','hinunter','hinein','hinaus','hinauf','hin','gegenüber',
+  'fort','fest','fern','ein','durch','dar','da','bei','auf','aus','an','ab',
+];
+// Inseparable prefixes (verb starts with these, NOT separated in use)
+const INSEP_PREFIXES = ['be','emp','ent','er','ge','miss','ver','zer'];
+
 function normalize(infinitive) {
   let v = infinitive.trim().toLowerCase();
   if (v.startsWith('sich ')) v = v.slice(5);
   return v;
+}
+
+function stripSeparablePrefix(inf) {
+  for (const pre of SEP_PREFIXES) {
+    if (inf.startsWith(pre) && inf.length > pre.length + 2) {
+      const base = inf.slice(pre.length);
+      if (IRREGULAR[base]) return { prefix: pre, base };
+    }
+  }
+  return null;
 }
 
 // Build regular weak verb forms
@@ -168,9 +188,35 @@ export function getVerbForms(word) {
   if (!word.pos?.toLowerCase().startsWith('verb')) return null;
 
   const inf = normalize(word.german);
+
+  // 1. Direct lookup
   if (IRREGULAR[inf]) return IRREGULAR[inf];
 
-  // Try base without ge- prefix for compound verbs
+  // 2. Inseparable prefix: strip and check base
+  for (const pre of INSEP_PREFIXES) {
+    if (inf.startsWith(pre)) {
+      const base = inf.slice(pre.length);
+      if (IRREGULAR[base]) {
+        const [prat, pp, aux] = IRREGULAR[base];
+        // Inseparable: no ge- in pp, forms keep prefix
+        return [pre + prat, pre + pp, aux];
+      }
+    }
+  }
+
+  // 3. Separable prefix: strip and check base
+  const sep = stripSeparablePrefix(inf);
+  if (sep) {
+    const [prat, pp, aux] = IRREGULAR[sep.base];
+    // Separable Präteritum: "fuhr ab" style already in dict for some;
+    // for derived ones, build "base-prat + pre" e.g. "kam an"
+    const pratSep = prat.includes(' ') ? prat : `${prat} ${sep.prefix}`;
+    // Partizip II: sep prefix + ge + base-stem + en/t
+    const ppSep = pp.startsWith('ge') ? `${sep.prefix}${pp}` : `${sep.prefix}ge${pp}`;
+    return [pratSep, ppSep, aux];
+  }
+
+  // 4. Regular weak verb
   const [prat, pp, aux] = regularForms(inf);
   return [prat, pp, aux];
 }
