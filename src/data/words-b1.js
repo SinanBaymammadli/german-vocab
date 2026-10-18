@@ -1029,5 +1029,6 @@ const WORDS = [
   {id:3887,german:"sobald",level:"B1",english:"as soon as",pos:"conjunction",sentences:[{"de": "Sobald ich fertig bin, rufe ich dich an.", "en": "As soon as I am finished, I will call you."}, {"de": "Sobald das Wetter besser wird, gehen wir raus.", "en": "As soon as the weather improves, we will go out."}]},
   {id:3888,german:"solange",level:"B1",english:"as long as",pos:"conjunction",sentences:[{"de": "Solange du hier bist, bin ich glücklich.", "en": "As long as you are here, I am happy."}, {"de": "Solange du arbeitest, kannst du sparen.", "en": "As long as you work, you can save."}]},
   {id:3889,german:"die Leitung",level:"B1",english:"line, management, leadership, pipe",pos:"noun (f)",sentences:[{"de": "Er übernimmt die Leitung des Projekts.", "en": "He is taking over the management of the project."}, {"de": "Die Leitung ist verstopft.", "en": "The pipe is blocked."}]},
+  {id:3936,german:"brechen",level:"B1",english:"to break","pos":"verb",sentences:[{de:"Er hat sich den Arm gebrochen.",en:"He broke his arm."},{de:"Das Eis bricht leicht.","en":"The ice breaks easily."}]},
 ];
 export default WORDS;
