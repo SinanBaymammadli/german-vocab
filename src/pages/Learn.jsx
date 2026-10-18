@@ -89,6 +89,7 @@ const nextWord = useCallback(() => {
         <div className="word-row">
           <span className="quiz-word">{displayGerman(word)}</span>
           <button className="speak-btn" onClick={() => speakGerman(word.german)}>🔊</button>
+          <span className={`word-card-tag level-${word.level ?? 'B1'}`}>{word.level ?? 'B1'}</span>
         </div>
 
         {phase === 'word' && (
