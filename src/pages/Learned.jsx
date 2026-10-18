@@ -2,17 +2,16 @@ import { useState, useEffect } from 'react';
 import WordModal from '../components/WordModal';
 import WORDS_B1 from '../data/words-b1';
 import { displayGerman } from '../lib/german';
+import { getWordsAsync } from '../data/index';
 
 export default function Learned({ isLearned, markLearned, markNew, progress }) {
   const [search, setSearch] = useState('');
   const [modal, setModal] = useState(null);
   const [allWords, setAllWords] = useState(WORDS_B1);
 
-  // Always load all words (B1 + B2) regardless of current level setting
+  // Always load ALL levels so every learned word shows up here
   useEffect(() => {
-    import('../data/words-b2').then(m => {
-      setAllWords([...WORDS_B1, ...m.default]);
-    });
+    getWordsAsync(['A1', 'A2', 'B1', 'B2']).then(setAllWords);
   }, []);
 
   let words = allWords.filter(w => isLearned(w.id));
