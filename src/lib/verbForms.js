@@ -66,6 +66,7 @@ const IRREGULAR = {
   'schießen':    ['schoss', 'geschossen', 'h'],
   'schließen':   ['schloss', 'geschlossen', 'h'],
   'brechen':     ['brach', 'gebrochen', 'h'],
+  'verbrennen':  ['verbrannte', 'verbrannt', 'h'],
   'schreien':    ['schrie', 'geschrien', 'h'],
   'schweigen':   ['schwieg', 'geschwiegen', 'h'],
   'bitten':      ['bat', 'gebeten', 'h'],

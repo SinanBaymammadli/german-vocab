@@ -1030,5 +1030,6 @@ const WORDS = [
   {id:3888,german:"solange",level:"B1",english:"as long as",pos:"conjunction",sentences:[{"de": "Solange du hier bist, bin ich glücklich.", "en": "As long as you are here, I am happy."}, {"de": "Solange du arbeitest, kannst du sparen.", "en": "As long as you work, you can save."}]},
   {id:3889,german:"die Leitung",level:"B1",english:"line, management, leadership, pipe",pos:"noun (f)",sentences:[{"de": "Er übernimmt die Leitung des Projekts.", "en": "He is taking over the management of the project."}, {"de": "Die Leitung ist verstopft.", "en": "The pipe is blocked."}]},
   {id:3936,german:"brechen",level:"B1",english:"to break","pos":"verb",sentences:[{de:"Er hat sich den Arm gebrochen.",en:"He broke his arm."},{de:"Das Eis bricht leicht.","en":"The ice breaks easily."}]},
+  {id:3937,german:"verbrennen",level:"B1",english:"to burn, to incinerate","pos":"verb",sentences:[{de:"Am Samstag war ich zu lange in der Sonne und habe mir die Haut auf der Nase verbrannt.",en:"On Saturday I was in the sun too long and burned the skin on my nose."},{de:"Bitte verbrennen Sie keine Abfälle im Garten.",en:"Please do not burn waste in the garden."}]},
 ];
 export default WORDS;
