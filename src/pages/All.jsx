@@ -4,19 +4,23 @@ import { displayGerman } from '../lib/german';
 
 const FILTERS = ['all', 'new', 'seen', 'learned'];
 
-export default function All({ words: allWords, isLearned, isSeen, markLearned, markNew }) {
+export default function All({ words: allWords, isLearned, isSeen, markLearned, markNew, progress }) {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
   const [modal, setModal] = useState(null);
 
-  let words = [...allWords].sort((a, b) => a.german.localeCompare(b.german));
+  const byDate = (a, b) => (progress[b.id]?.lastReviewed ?? 0) - (progress[a.id]?.lastReviewed ?? 0);
+  const byName = (a, b) => a.german.localeCompare(b.german);
+
+  let words = [...allWords];
   if (search) {
     const q = search.toLowerCase();
     words = words.filter(w => w.german.toLowerCase().includes(q) || w.english.toLowerCase().includes(q));
   }
-  if (filter === 'learned') words = words.filter(w => isLearned(w.id));
-  else if (filter === 'seen') words = words.filter(w => isSeen(w.id) && !isLearned(w.id));
-  else if (filter === 'new') words = words.filter(w => !isSeen(w.id));
+  if (filter === 'learned') { words = words.filter(w => isLearned(w.id)).sort(byDate); }
+  else if (filter === 'seen') { words = words.filter(w => isSeen(w.id) && !isLearned(w.id)).sort(byDate); }
+  else if (filter === 'new') { words = words.filter(w => !isSeen(w.id)).sort(byName); }
+  else { words = words.sort(byName); }
 
   return (
     <div>
