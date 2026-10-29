@@ -1,30 +1,70 @@
 // Words that are near-identical to English — pre-marked as learned on first open.
-// Users can undo via the Learned tab.
+// Users can undo via the All tab (filter: Learned → ↩).
 
 // Direct loanwords / internationally identical words
 const LOANWORDS = new Set([
-  'App','Baby','Ball','Blog','Bus','Camping','Chaos','Chat','Cola',
-  'Computer','Design','Email','Feedback','Film','Fitness','Forum',
-  'Golf','Grill','Handball','Hotel','Humor','Internet','Job','Kamera',
-  'Laptop','Marketing','Massage','Material','Meditation','Modul',
-  'Museum','Musik','Normal','Online','Option','PC','Park','Party',
-  'Pilot','Pilates','Pizza','Pool','Porto','Programm','Projekt',
-  'Radio','Recycling','Restaurant','Roboter','Sandwich','Service',
-  'Shopping','Shorts','Smartphone','Snack','Software','Sport','Steak',
-  'Stress','Symbol','System','Tablet','Taxi','Team','Test','Theater',
-  'Toast','Training','Trend','Video','Volleyball','Volleyball','Wifi',
-  'Workshop','Yoga',
-  // A2/A1 common ones
-  'Toaster','Handy','Hobby','Supermarkt','Supermarkt','Kiosk',
-  'Café','Disco','Disko','Drama','Euro','Kilo','Kino','Klima',
-  'Konzert','Kultur','Liter','Mango','Menu','Meter','Motor',
-  'Museum','Natur','Opera','Park','Pasta','Planet','Plus',
-  'Poster','Problem','Produkt','Profil','Protest','Pub',
-  'Satellit','Sauna','Sofa','Solo','Sport','Standard','Start',
-  'Station','Status','Stereo','Studio','Sturm','Super',
-  'Tango','Tattoo','Technik','Tempo','Tennis','Terror',
-  'Text','Ticket','Tipp','Ton','Tour','Tourist',
-  'Uniform','Universal','Vitamin','Zone','Zoo',
+  // Tech & digital
+  'App','Blog','Chat','Cloud','Computer','Design','DVD','Email','Fax',
+  'Feedback','Forum','Hardware','Interface','Internet','Kamera','Laptop',
+  'Make-up','Marketing','Modul','Newsletter','Online','online','PC','Programm',
+  'Radio','Recycling','Roboter','Smartphone','Software','Tablet','Wifi','Wlan',
+
+  // Food & lifestyle
+  'Baby','Café','Camping','Cola','Fast Food','Fitness','Golf','Grill',
+  'Hostel','Kiosk','Kiwi','Mandarine','Mango','Massage','Meditation','Menu',
+  'Orange','Pasta','Pilates','Pizza','Pizzeria','Pool','Pub','Sandwich',
+  'Sauna','Snack','Sofa','Steak','Toast','Yoga','Zucchini',
+
+  // Sports & leisure
+  'Ball','Basketball','Handball','Hobby','Shirt','Shorts','Ski','Sport',
+  'Volleyball',
+
+  // Business & work
+  'Astronaut','Bachelor','Bonus','Budget','Burnout','Catering','Deadline','Design',
+  'Event','Expertise','Extra','Feedback','Job','Karriere','Know-how',
+  'Kontrolle','Kredit','Logo','Management','Marketing','Manager','Outsourcing',
+  'Pilot','Portfolio','Projekt','Reporter','Seminar','Sponsor','Standard',
+  'Student','Trainer','Workshop',
+
+  // Society & culture
+  'Alarm','Anorak','Asyl','Chaos','Drama','Film','Humor','Interview',
+  'Kindergarten','Konzert','Kultur','Museum','Musik','NATO','Niveau',
+  'Park','Party','Religion','Restaurant','Theater','Tourist',
+
+  // Science & medicine
+  'Algorithmus','Aluminium','Appetit','Diplom','Gas','Gramm','Kilo',
+  'Labor','Liter','Meter','Million','Minute','Paragraph','Patient',
+  'Semester','Signal','Struktur','Temperatur','Thesis','Tsunami','Virus',
+  'Vitamin',
+
+  // Travel & places
+  'Bus','Euro','Garage','Gate','Hotel','Klima','Taxi','Tour',
+  'Transport','Uniform',
+
+  // Everyday objects & words
+  'Alternative','Aluminium','Argument','Arm','Band','Bank','Basis',
+  'Bistro','Cent','Chance','Container','Dialog','Diagramm','Diplom',
+  'Expansion','Fan','Finger','Form','Gold','Hand','Hunger',
+  'Jacke','Jeans','Lampe','Liste','Magazin','Mann','Melone',
+  'Metall','Moment','Name','Original','Person','Phase','PIN',
+  'Plan','Post','Pullover','Risiko','Semester','Symbol',
+  'System','Teenager','Toilette','Trick','Variante','Vase','Wind',
+  'Winter',
+
+  // Adjectives/adverbs (same in both languages)
+  'beige','blond','emotional','extra','fair','fit','international',
+  'minus','modern','privat','total','unfair','vegan','warm',
+
+  // Months (identical spelling)
+  'April','August','September','November',
+
+  // Other common loanwords
+  'Disko','Disco','PC','Porto','Profil','Protest','Satellit',
+  'Shopping','Solo','Start','Station','Status','Stereo','Studio',
+  'Super','Tango','Tattoo','Technik','Tempo','Tennis','Terror',
+  'Text','Ticket','Tipp','Ton','Training','Trend','Video','Zone','Zoo',
+  'Toaster','Supermarkt','Kino','Motor','Natur','Planet','Plus',
+  'Poster','Problem','Produkt','Programm',
 ]);
 
 // Systematic endings that almost always map to English equivalents
@@ -51,8 +91,11 @@ export function getEasyWordIds(allWords) {
   const ids = [];
   for (const word of allWords) {
     const g = word.german ?? '';
-    // Strip article
-    const bare = g.replace(/^(der|die|das|sich) /i, '').trim();
+    // Strip article and gendered suffix (/in, /innen, /-in)
+    const bare = g
+      .replace(/^(der|die|das|sich) /i, '')
+      .replace(/\/in(nen)?$|\/\-in$/, '')
+      .trim();
 
     if (LOANWORDS.has(bare)) { ids.push(word.id); continue; }
 

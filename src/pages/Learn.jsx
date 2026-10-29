@@ -37,15 +37,18 @@ function buildChoices(words, word) {
   return shuffle([...others, word]);
 }
 
-export default function Learn({ words, isLearned, markLearned, markNew, reset }) {
+export default function Learn({ words, isLearned, isSeen, markLearned, markNew, markSeen, reset }) {
   const total = words.length;
   const learnedCount = words.filter(w => isLearned(w.id)).length;
-  const pct = Math.round((learnedCount / total) * 100);
+  const seenCount = words.filter(w => isSeen(w.id) && !isLearned(w.id)).length;
+  const learnedPct = Math.round((learnedCount / total) * 100);
+  const seenPct = Math.round((seenCount / total) * 100);
 
   const [word, setWord] = useState(() => pickWord(words, isLearned));
   const [choices, setChoices] = useState(() => word ? buildChoices(words, word) : []);
   const [phase, setPhase] = useState('word'); // 'word' | 'quiz' | 'feedback'
   const [result, setResult] = useState(null);
+
 
 const nextWord = useCallback(() => {
     const w = pickWord(words, isLearned);
@@ -69,11 +72,13 @@ const nextWord = useCallback(() => {
   function handleChoice(chosen) {
     const wasCorrect = chosen.id === word.id;
     if (wasCorrect) markLearned(word.id);
+    else markSeen(word.id);
     setResult({ chosen, wasCorrect });
     setPhase('feedback');
   }
 
   function handleReveal() {
+    markSeen(word.id);
     setPhase('feedback');
     setResult({ chosen: null, wasCorrect: false });
   }
@@ -81,9 +86,12 @@ const nextWord = useCallback(() => {
   return (
     <div>
       <div className="progress-wrap">
-        <div className="progress-fill" style={{ width: `${pct}%` }} />
+        <div className="progress-fill progress-seen" style={{ width: `${learnedPct + seenPct}%` }} />
+        <div className="progress-fill" style={{ width: `${learnedPct}%` }} />
       </div>
-      <p className="progress-label">{learnedCount} / {total} words learned ({pct}%)</p>
+      <p className="progress-label">
+        {learnedCount} learned ({learnedPct}%) · {seenCount} seen ({seenPct}%) · {total} total
+      </p>
 
       <div className="quiz-card">
         <div className="word-row">

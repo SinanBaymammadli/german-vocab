@@ -1,12 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
-export default function Header({ user, onSignIn, onSignOut, levels = ['B1'] }) {
+const ALL_LEVELS = ['A1', 'A2', 'B1', 'B2'];
+
+function initials(name) {
+  if (!name) return '?';
+  return name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+}
+
+export default function Header({ user, onSignIn, onSignOut, levels = ['B1'], setLevels }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
-  const navigate = useNavigate();
+  const cls = ({ isActive }) => isActive ? 'nav-btn active' : 'nav-btn';
 
-  // Close on outside click
   useEffect(() => {
     function handler(e) {
       if (!menuRef.current?.contains(e.target)) setOpen(false);
@@ -15,40 +21,53 @@ export default function Header({ user, onSignIn, onSignOut, levels = ['B1'] }) {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const cls = ({ isActive }) => isActive ? 'nav-btn active' : 'nav-btn';
+  function toggleLevel(level) {
+    if (levels.includes(level)) {
+      if (levels.length === 1) return;
+      setLevels(levels.filter(l => l !== level));
+    } else {
+      setLevels([...levels, level]);
+    }
+  }
 
   return (
     <header>
       <div className="header-inner">
         <nav>
-          <NavLink to="/" end className={cls}>Learn</NavLink>
-          <NavLink to="/learned" className={cls}>Learned</NavLink>
+          <NavLink to="/" end className={cls}>New</NavLink>
           <NavLink to="/all" className={cls}>All</NavLink>
         </nav>
 
-        <div className="menu-wrap" ref={menuRef}>
-          <button
-            className={`menu-trigger${open ? ' open' : ''}`}
-            onClick={() => setOpen(o => !o)}
-            aria-label="Menu"
-          >
-            <span className="level-badge">{levels.join('+')}</span>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M8 10.5L2.5 5h11L8 10.5z"/>
-            </svg>
-          </button>
-
-          {open && (
-            <div className="dropdown">
-              <button className="dropdown-item" onClick={() => { navigate('/settings'); setOpen(false); }}>
-                <span className="icon">⚙</span> Settings
+        <div className="header-right">
+          <div className="header-levels">
+            {ALL_LEVELS.map(level => (
+              <button
+                key={level}
+                className={`header-level-btn${levels.includes(level) ? ' active' : ''}`}
+                onClick={() => toggleLevel(level)}
+              >
+                {level}
               </button>
-              <div className="dropdown-divider" />
-              {user
-                ? <button className="dropdown-item" onClick={() => { onSignOut(); setOpen(false); }}>Sign out</button>
-                : <button className="dropdown-item" onClick={() => { onSignIn(); setOpen(false); }}>Sync progress</button>
-              }
+            ))}
+          </div>
+
+          {user ? (
+            <div className="avatar-wrap" ref={menuRef}>
+              <button className="avatar-btn" onClick={() => setOpen(o => !o)} aria-label="Account">
+                {initials(user.displayName)}
+              </button>
+              {open && (
+                <div className="avatar-dropdown">
+                  <div className="avatar-dropdown-name">{user.displayName ?? user.email}</div>
+                  <div className="avatar-dropdown-divider" />
+                  <button className="avatar-dropdown-item" onClick={() => { onSignOut(); setOpen(false); }}>
+                    Sign out
+                  </button>
+                </div>
+              )}
             </div>
+          ) : (
+            <button className="auth-btn" onClick={onSignIn}>Login</button>
           )}
         </div>
       </div>

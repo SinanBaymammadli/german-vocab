@@ -85,7 +85,15 @@ export function useProgress() {
     save(p);
   }, [save]);
 
+  const markSeen = useCallback((wordId) => {
+    const current = loadLocal();
+    if ((current[wordId]?.score ?? 0) >= 1) return;
+    const p = { ...current, [wordId]: { score: 1, lastReviewed: Date.now() } };
+    save(p);
+  }, [save]);
+
   const isLearned = useCallback((wordId) => (progress[wordId]?.score ?? 0) >= 3, [progress]);
+  const isSeen = useCallback((wordId) => (progress[wordId]?.score ?? 0) >= 1, [progress]);
 
   const reset = useCallback(() => {
     localStorage.removeItem(KEY);
@@ -95,5 +103,5 @@ export function useProgress() {
   const signIn = () => signInWithPopup(auth, googleProvider).catch(console.error);
   const signOutFn = () => signOut(auth);
 
-  return { progress, isLearned, markLearned, markNew, reset, user, signIn, signOut: signOutFn };
+  return { progress, isLearned, isSeen, markLearned, markNew, markSeen, reset, user, signIn, signOut: signOutFn };
 }

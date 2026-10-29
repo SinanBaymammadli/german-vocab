@@ -4,6 +4,19 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   plugins: [
+    {
+      name: 'trailing-slash-redirect',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url === '/german-vocab') {
+            res.writeHead(301, { Location: '/german-vocab/' });
+            res.end();
+            return;
+          }
+          next();
+        });
+      },
+    },
     react(),
     VitePWA({
       registerType: 'autoUpdate',
