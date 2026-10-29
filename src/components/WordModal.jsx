@@ -11,15 +11,16 @@ export default function WordModal({ word, isLearned, onMarkLearned, onMarkNew, o
     <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="modal">
         <div className="modal-header">
-          <span className="modal-german">{displayGerman(word)}</span>
-          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+            <span className="modal-german">{displayGerman(word)}</span>
             <button className="speak-btn" onClick={() => speakGerman(word.german)}>
               🔊
             </button>
-            <button className="modal-close" onClick={onClose}>
-              ✕
-            </button>
           </div>
+
+          <button className="modal-close" onClick={onClose}>
+            ✕
+          </button>
         </div>
         <span className={`modal-tag level-${word.level ?? "B1"}`}>{word.level ?? "B1"}</span>
         <div className="modal-english">{word.english}</div>
