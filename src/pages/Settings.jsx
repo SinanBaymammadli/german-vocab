@@ -4,7 +4,7 @@ export default function Settings({ settings, setLevels }) {
   function toggle(level) {
     if (levels.includes(level)) {
       if (levels.length === 1) return; // keep at least one selected
-      setLevels(levels.filter(l => l !== level));
+      setLevels(levels.filter((l) => l !== level));
     } else {
       setLevels([...levels, level]);
     }
@@ -18,10 +18,10 @@ export default function Settings({ settings, setLevels }) {
         <h3>Vocabulary level</h3>
         <p className="settings-hint">Select one or more levels to study.</p>
         <div className="level-picker">
-          {['A1', 'A2', 'B1', 'B2'].map(level => (
+          {["A1", "A2", "B1", "B2"].map((level) => (
             <button
               key={level}
-              className={`level-btn${levels.includes(level) ? ' active' : ''}`}
+              className={`level-btn${levels.includes(level) ? " active" : ""}`}
               onClick={() => toggle(level)}
             >
               {level}

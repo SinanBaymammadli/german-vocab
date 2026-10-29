@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react';
-import { auth, db, onAuthStateChanged, doc, getDoc, setDoc } from '../lib/firebase';
+import { useState, useEffect } from "react";
+import { auth, db, onAuthStateChanged, doc, getDoc, setDoc } from "../lib/firebase";
 
-const KEY = 'b1vocab_settings';
-const DEFAULT = { levels: ['B1'] };
+const KEY = "b1vocab_settings";
+const DEFAULT = { levels: ["B1"] };
 
 function loadLocal() {
-  try { return JSON.parse(localStorage.getItem(KEY)) ?? DEFAULT; }
-  catch { return DEFAULT; }
+  try {
+    return JSON.parse(localStorage.getItem(KEY)) ?? DEFAULT;
+  } catch {
+    return DEFAULT;
+  }
 }
 
 export function useSettings() {
@@ -18,21 +21,24 @@ export function useSettings() {
   }
 
   async function saveCloud(uid, s) {
-    try { await setDoc(doc(db, 'users', uid, 'data', 'settings'), s); } catch {}
+    try {
+      await setDoc(doc(db, "users", uid, "data", "settings"), s);
+    } catch {}
   }
 
   // On sign-in, load settings from Firestore and merge (cloud wins)
   useEffect(() => {
-    return onAuthStateChanged(auth, async user => {
+    return onAuthStateChanged(auth, async (user) => {
       if (!user) return;
       try {
-        const snap = await getDoc(doc(db, 'users', user.uid, 'data', 'settings'));
+        const snap = await getDoc(doc(db, "users", user.uid, "data", "settings"));
         if (snap.exists()) {
           const cloud = snap.data();
           // Only update if levels actually differ from local
           const local = loadLocal();
-          const same = JSON.stringify([...(local.levels ?? [])].sort()) ===
-                        JSON.stringify([...(cloud.levels ?? [])].sort());
+          const same =
+            JSON.stringify([...(local.levels ?? [])].sort()) ===
+            JSON.stringify([...(cloud.levels ?? [])].sort());
           if (!same) saveLocal(cloud);
         } else {
           // First sign-in: push local settings to cloud
